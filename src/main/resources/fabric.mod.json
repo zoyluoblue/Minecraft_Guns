@@ -1,0 +1,30 @@
+{
+	"schemaVersion": 1,
+	"id": "guns",
+	"version": "${version}",
+	"name": "Guns",
+	"description": "Adds the zyguns item group and scoped sniper weapons.",
+	"authors": [
+		"zoyluo"
+	],
+	"contact": {},
+	"license": "MIT",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.zoyluo.guns.Guns"
+		],
+		"client": [
+			"com.zoyluo.guns.GunsClient"
+		]
+	},
+	"mixins": [
+		"guns.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.18.4",
+		"minecraft": "1.21.3",
+		"java": ">=21",
+		"fabric-api": ">=0.114.1+1.21.3"
+	}
+}

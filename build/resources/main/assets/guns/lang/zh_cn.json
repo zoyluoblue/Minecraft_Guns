@@ -1,0 +1,15 @@
+{
+	"item.guns.sniper_rifle": "狙击枪",
+	"item.guns.shotgun": "霰弹枪",
+	"item.guns.grenade_launcher": "榴弹枪",
+	"item.guns.grenade_round": "黑色榴弹",
+	"itemGroup.guns.zyguns": "新型武器",
+	"tooltip.guns.sniper_rifle.damage": "基础伤害：%s",
+	"tooltip.guns.sniper_rifle.zoom": "右键切换 1/2/4/8/16 倍狙击镜，狙击镜开启后左键射击",
+	"tooltip.guns.shotgun.damage": "近距离伤害：%s",
+	"tooltip.guns.shotgun.range": "射程：%s 格，扇形范围：%s 度",
+	"tooltip.guns.grenade_launcher.explosion": "发射抛物线榴弹，命中首个物体后爆炸",
+	"tooltip.guns.grenade_launcher.trajectory": "爆炸威力与 TNT 一致",
+	"hud.guns.sniper_zoom": "%sx",
+	"message.guns.sniper_rifle.need_scope": "需要先打开狙击镜"
+}

@@ -1,0 +1,4 @@
+v1	named	intermediary
+FIELD	com/zoyluo/guns/client/mixin/BipedEntityModelMixin	Lnet/minecraft/client/model/ModelPart;	head	field_3398
+FIELD	com/zoyluo/guns/client/mixin/BipedEntityModelMixin	Lnet/minecraft/client/model/ModelPart;	rightArm	field_3401
+FIELD	com/zoyluo/guns/client/mixin/BipedEntityModelMixin	Lnet/minecraft/client/model/ModelPart;	leftArm	field_27433
