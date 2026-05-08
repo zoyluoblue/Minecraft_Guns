@@ -2,6 +2,9 @@
 	"item.guns.sniper_rifle": "狙击枪",
 	"item.guns.shotgun": "霰弹枪",
 	"item.guns.grenade_launcher": "榴弹枪",
+	"item.guns.smg": "冲锋枪",
+	"item.guns.flamethrower": "火焰喷射器",
+	"item.guns.railgun": "电磁轨道炮",
 	"item.guns.grenade_round": "黑色榴弹",
 	"itemGroup.guns.zyguns": "新型武器",
 	"tooltip.guns.sniper_rifle.damage": "基础伤害：%s",
@@ -10,6 +13,9 @@
 	"tooltip.guns.shotgun.range": "射程：%s 格，扇形范围：%s 度",
 	"tooltip.guns.grenade_launcher.explosion": "发射抛物线榴弹，命中首个物体后爆炸",
 	"tooltip.guns.grenade_launcher.trajectory": "爆炸威力与 TNT 一致",
+	"tooltip.guns.smg": "短射程高射速连发武器，适合近距离清怪",
+	"tooltip.guns.flamethrower": "短距离持续喷射火焰，点燃范围内目标",
+	"tooltip.guns.railgun": "长冷却高伤害射线，可穿透多个目标",
 	"hud.guns.sniper_zoom": "%sx",
 	"message.guns.sniper_rifle.need_scope": "需要先打开狙击镜"
 }

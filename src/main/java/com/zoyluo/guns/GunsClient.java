@@ -1,6 +1,7 @@
 package com.zoyluo.guns;
 
 import com.zoyluo.guns.item.SniperRifleItem;
+import com.zoyluo.guns.network.AdvancedWeaponFirePayload;
 import com.zoyluo.guns.network.GrenadeLauncherFirePayload;
 import com.zoyluo.guns.network.ShotgunFirePayload;
 import com.zoyluo.guns.network.SniperFirePayload;
@@ -71,7 +72,12 @@ public class GunsClient implements ClientModInitializer {
 		return state instanceof PlayerEntityRenderState playerState
 				&& client.player != null
 				&& playerState.id == client.player.getId()
-				&& (isScoped() || client.player.getMainHandStack().isOf(Guns.SHOTGUN) || client.player.getMainHandStack().isOf(Guns.GRENADE_LAUNCHER));
+				&& (isScoped()
+				|| client.player.getMainHandStack().isOf(Guns.SHOTGUN)
+				|| client.player.getMainHandStack().isOf(Guns.GRENADE_LAUNCHER)
+				|| client.player.getMainHandStack().isOf(Guns.SMG)
+				|| client.player.getMainHandStack().isOf(Guns.FLAMETHROWER)
+				|| client.player.getMainHandStack().isOf(Guns.RAILGUN));
 	}
 
 	public static boolean handleScopedUse(MinecraftClient client) {
@@ -103,6 +109,19 @@ public class GunsClient implements ClientModInitializer {
 		if (handleScopedAttack(client)) {
 			return true;
 		}
+		AdvancedWeaponFirePayload.Weapon advancedWeapon = getAdvancedWeapon(client);
+		if (advancedWeapon != null) {
+			if (ClientPlayNetworking.canSend(AdvancedWeaponFirePayload.ID)) {
+				ClientPlayNetworking.send(new AdvancedWeaponFirePayload(advancedWeapon));
+			}
+			if (!isAutomaticWeapon(advancedWeapon)) {
+				client.options.attackKey.setPressed(false);
+			}
+			if (client.interactionManager != null) {
+				client.interactionManager.cancelBlockBreaking();
+			}
+			return true;
+		}
 		if (client.player == null || !client.player.getMainHandStack().isOf(Guns.SHOTGUN)) {
 			if (client.player == null || !client.player.getMainHandStack().isOf(Guns.GRENADE_LAUNCHER)) {
 				return false;
@@ -127,6 +146,22 @@ public class GunsClient implements ClientModInitializer {
 		return true;
 	}
 
+	private static AdvancedWeaponFirePayload.Weapon getAdvancedWeapon(MinecraftClient client) {
+		if (client.player == null) {
+			return null;
+		}
+		if (client.player.getMainHandStack().isOf(Guns.SMG)) {
+			return AdvancedWeaponFirePayload.Weapon.SMG;
+		}
+		if (client.player.getMainHandStack().isOf(Guns.FLAMETHROWER)) {
+			return AdvancedWeaponFirePayload.Weapon.FLAMETHROWER;
+		}
+		if (client.player.getMainHandStack().isOf(Guns.RAILGUN)) {
+			return AdvancedWeaponFirePayload.Weapon.RAILGUN;
+		}
+		return null;
+	}
+
 	private static void tick(MinecraftClient client) {
 		if (client.player == null || client.currentScreen != null) {
 			clearZoom();
@@ -134,7 +169,7 @@ public class GunsClient implements ClientModInitializer {
 			attackWasDown = false;
 			return;
 		}
-		if (!client.player.getMainHandStack().isOf(Guns.SNIPER_RIFLE) && !client.player.getMainHandStack().isOf(Guns.SHOTGUN) && !client.player.getMainHandStack().isOf(Guns.GRENADE_LAUNCHER)) {
+		if (!isHoldingAnyGun(client)) {
 			clearZoom();
 			useWasDown = client.options.useKey.isPressed();
 			attackWasDown = client.options.attackKey.isPressed();
@@ -146,12 +181,29 @@ public class GunsClient implements ClientModInitializer {
 		if (useDown && !useWasDown) {
 			handleScopedUse(client);
 		}
-		if (attackDown && !attackWasDown) {
+		if (attackDown && (isAutomaticWeapon(client) || !attackWasDown)) {
 			handleGunAttack(client);
 		}
 
 		useWasDown = useDown;
 		attackWasDown = attackDown;
+	}
+
+	private static boolean isAutomaticWeapon(MinecraftClient client) {
+		return isAutomaticWeapon(getAdvancedWeapon(client));
+	}
+
+	private static boolean isAutomaticWeapon(AdvancedWeaponFirePayload.Weapon weapon) {
+		return weapon == AdvancedWeaponFirePayload.Weapon.SMG
+				|| weapon == AdvancedWeaponFirePayload.Weapon.FLAMETHROWER;
+	}
+
+	private static boolean isHoldingAnyGun(MinecraftClient client) {
+		return client.player != null
+				&& (client.player.getMainHandStack().isOf(Guns.SNIPER_RIFLE)
+				|| client.player.getMainHandStack().isOf(Guns.SHOTGUN)
+				|| client.player.getMainHandStack().isOf(Guns.GRENADE_LAUNCHER)
+				|| getAdvancedWeapon(client) != null);
 	}
 
 	private static void renderScope(DrawContext context, net.minecraft.client.render.RenderTickCounter tickCounter) {

@@ -2,6 +2,9 @@
 	"item.guns.sniper_rifle": "Sniper Rifle",
 	"item.guns.shotgun": "Shotgun",
 	"item.guns.grenade_launcher": "Grenade Launcher",
+	"item.guns.smg": "SMG",
+	"item.guns.flamethrower": "Flamethrower",
+	"item.guns.railgun": "Railgun",
 	"item.guns.grenade_round": "Black Grenade",
 	"itemGroup.guns.zyguns": "New Weapons",
 	"tooltip.guns.sniper_rifle.damage": "Base damage: %s",
@@ -10,6 +13,9 @@
 	"tooltip.guns.shotgun.range": "Range: %s blocks, cone: %s degrees",
 	"tooltip.guns.grenade_launcher.explosion": "Fires arcing grenades that explode on first impact",
 	"tooltip.guns.grenade_launcher.trajectory": "Explosion power matches TNT",
+	"tooltip.guns.smg": "Short-range high-rate automatic weapon for close fights",
+	"tooltip.guns.flamethrower": "Short-range continuous flame stream that ignites targets",
+	"tooltip.guns.railgun": "Long-cooldown high-damage beam that pierces targets",
 	"hud.guns.sniper_zoom": "%sx",
 	"message.guns.sniper_rifle.need_scope": "Open the scope first"
 }

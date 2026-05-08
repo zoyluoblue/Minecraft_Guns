@@ -39,6 +39,7 @@ public final class SniperRifleServer {
 	private static final Map<UUID, Integer> FIRE_COOLDOWNS = new HashMap<>();
 	private static final Map<UUID, Integer> SHOTGUN_COOLDOWNS = new HashMap<>();
 	private static final Map<UUID, Integer> GRENADE_LAUNCHER_COOLDOWNS = new HashMap<>();
+	private static final Map<String, Integer> ADVANCED_COOLDOWNS = new HashMap<>();
 	private static final List<BulletTrace> BULLET_TRACES = new ArrayList<>();
 	private static final int FIRE_COOLDOWN_TICKS = 16;
 	private static final int SHOTGUN_COOLDOWN_TICKS = 22;
@@ -54,10 +55,12 @@ public final class SniperRifleServer {
 		PayloadTypeRegistry.playC2S().register(SniperFirePayload.ID, SniperFirePayload.CODEC);
 		PayloadTypeRegistry.playC2S().register(ShotgunFirePayload.ID, ShotgunFirePayload.CODEC);
 		PayloadTypeRegistry.playC2S().register(GrenadeLauncherFirePayload.ID, GrenadeLauncherFirePayload.CODEC);
+		PayloadTypeRegistry.playC2S().register(AdvancedWeaponFirePayload.ID, AdvancedWeaponFirePayload.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(SniperZoomPayload.ID, (payload, context) -> setZoom(context.player(), payload.zoomLevel()));
 		ServerPlayNetworking.registerGlobalReceiver(SniperFirePayload.ID, (payload, context) -> fire(context.player()));
 		ServerPlayNetworking.registerGlobalReceiver(ShotgunFirePayload.ID, (payload, context) -> fireShotgun(context.player()));
 		ServerPlayNetworking.registerGlobalReceiver(GrenadeLauncherFirePayload.ID, (payload, context) -> fireGrenadeLauncher(context.player()));
+		ServerPlayNetworking.registerGlobalReceiver(AdvancedWeaponFirePayload.ID, (payload, context) -> fireAdvancedWeapon(context.player(), payload.weapon()));
 		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> clear(handler.player));
 		ServerTickEvents.END_SERVER_TICK.register(server -> {
 			tickCooldowns();
@@ -182,6 +185,135 @@ public final class SniperRifleServer {
 		GRENADE_LAUNCHER_COOLDOWNS.put(player.getUuid(), GRENADE_LAUNCHER_COOLDOWN_TICKS);
 	}
 
+	private static void fireAdvancedWeapon(ServerPlayerEntity player, AdvancedWeaponFirePayload.Weapon weapon) {
+		if (!(player.getWorld() instanceof ServerWorld world) || !isHoldingAdvancedWeapon(player, weapon)) {
+			return;
+		}
+		String cooldownKey = player.getUuid() + ":" + weapon.name();
+		if (ADVANCED_COOLDOWNS.getOrDefault(cooldownKey, 0) > 0) {
+			return;
+		}
+
+		switch (weapon) {
+			case SMG -> {
+				fireHitscan(player, 32.0D, 2.0F, 4.0D, 1, ParticleTypes.SMOKE);
+				setAdvancedCooldown(cooldownKey, 4);
+			}
+			case FLAMETHROWER -> {
+				fireFlamethrower(player);
+				setAdvancedCooldown(cooldownKey, 2);
+			}
+			case RAILGUN -> {
+				fireRailgun(player);
+				setAdvancedCooldown(cooldownKey, 60);
+			}
+		}
+	}
+
+	private static void setAdvancedCooldown(String cooldownKey, int ticks) {
+		ADVANCED_COOLDOWNS.put(cooldownKey, ticks);
+	}
+
+	private static void fireHitscan(ServerPlayerEntity player, double range, float baseDamage, double spreadDegrees, int pierce, net.minecraft.particle.ParticleEffect particle) {
+		if (!(player.getWorld() instanceof ServerWorld world)) {
+			return;
+		}
+		ItemStack stack = player.getMainHandStack();
+		Vec3d start = player.getEyePos();
+		Vec3d direction = applySpread(player.getRotationVec(1.0F).normalize(), world, spreadDegrees);
+		Vec3d end = start.add(direction.multiply(range));
+		BlockHitResult blockHit = world.raycast(new RaycastContext(start, end, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, player));
+		Vec3d visualEnd = blockHit.getType() == HitResult.Type.BLOCK ? blockHit.getPos() : end;
+		double maxDistance = start.squaredDistanceTo(visualEnd);
+		Box searchBox = player.getBoundingBox().stretch(direction.multiply(range)).expand(1.0D);
+		List<EntityHitResult> hits = new ArrayList<>();
+		for (Entity target : world.getOtherEntities(player, searchBox, entity -> canHit(player, entity))) {
+			EntityHitResult hit = ProjectileUtil.raycast(player, start, visualEnd, target.getBoundingBox().expand(0.3D), entity -> entity == target, maxDistance);
+			if (hit != null) {
+				hits.add(hit);
+			}
+		}
+		hits.sort((a, b) -> Double.compare(start.squaredDistanceTo(a.getPos()), start.squaredDistanceTo(b.getPos())));
+		int hitCount = 0;
+		for (EntityHitResult hit : hits) {
+			Entity target = hit.getEntity();
+			float damage = EnchantmentHelper.getDamage(world, stack, target, player.getDamageSources().playerAttack(player), baseDamage);
+			target.damage(world, player.getDamageSources().playerAttack(player), damage);
+			EnchantmentHelper.onTargetDamaged(world, target, player.getDamageSources().playerAttack(player), stack);
+			visualEnd = hit.getPos();
+			if (++hitCount >= pierce) {
+				break;
+			}
+		}
+		spawnLineParticles(world, start.add(direction.multiply(0.7D)), visualEnd, particle, 0.65D);
+		world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 0.55F, spreadDegrees <= 0.0D ? 1.8F : 1.35F);
+		stack.damage(1, player, EquipmentSlot.MAINHAND);
+	}
+
+	private static void fireRailgun(ServerPlayerEntity player) {
+		if (!(player.getWorld() instanceof ServerWorld world)) {
+			return;
+		}
+		ItemStack stack = player.getMainHandStack();
+		Vec3d start = player.getEyePos();
+		Vec3d direction = player.getRotationVec(1.0F).normalize();
+		double range = 160.0D;
+		Vec3d end = start.add(direction.multiply(range));
+		BlockHitResult blockHit = world.raycast(new RaycastContext(start, end, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, player));
+		Vec3d visualEnd = blockHit.getType() == HitResult.Type.BLOCK ? blockHit.getPos() : end;
+		double maxDistance = start.squaredDistanceTo(visualEnd);
+		Box searchBox = player.getBoundingBox().stretch(direction.multiply(range)).expand(1.2D);
+		List<EntityHitResult> hits = new ArrayList<>();
+		for (Entity target : world.getOtherEntities(player, searchBox, entity -> canHit(player, entity))) {
+			EntityHitResult hit = ProjectileUtil.raycast(player, start, visualEnd, target.getBoundingBox().expand(0.65D), entity -> entity == target, maxDistance);
+			if (hit != null) {
+				hits.add(hit);
+			}
+		}
+		hits.sort((a, b) -> Double.compare(start.squaredDistanceTo(a.getPos()), start.squaredDistanceTo(b.getPos())));
+		for (EntityHitResult hit : hits) {
+			Entity target = hit.getEntity();
+			float damage = EnchantmentHelper.getDamage(world, stack, target, player.getDamageSources().playerAttack(player), 35.0F);
+			target.damage(world, player.getDamageSources().playerAttack(player), damage);
+			EnchantmentHelper.onTargetDamaged(world, target, player.getDamageSources().playerAttack(player), stack);
+		}
+		Vec3d muzzle = start.add(direction.multiply(0.95D));
+		spawnRailgunMuzzleRing(world, muzzle, direction);
+		spawnRailgunBeam(world, muzzle, visualEnd);
+		world.playSound(null, player.getBlockPos(), SoundEvents.BLOCK_BEACON_POWER_SELECT, SoundCategory.PLAYERS, 1.0F, 0.6F);
+		world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_GENERIC_EXPLODE.value(), SoundCategory.PLAYERS, 0.45F, 1.9F);
+		stack.damage(2, player, EquipmentSlot.MAINHAND);
+	}
+
+	private static void fireFlamethrower(ServerPlayerEntity player) {
+		if (!(player.getWorld() instanceof ServerWorld world)) {
+			return;
+		}
+		ItemStack stack = player.getMainHandStack();
+		Vec3d start = player.getEyePos();
+		Vec3d forward = player.getRotationVec(1.0F).normalize();
+		double range = 8.0D;
+		double coneDot = Math.cos(Math.toRadians(24.0D));
+		for (int i = 1; i <= 12; i++) {
+			Vec3d direction = applySpread(forward, world, 22.0D);
+			Vec3d pos = start.add(direction.multiply(i * range / 12.0D));
+			world.spawnParticles(ParticleTypes.FLAME, pos.x, pos.y, pos.z, 2, 0.04D, 0.04D, 0.04D, 0.01D);
+			world.spawnParticles(ParticleTypes.SMOKE, pos.x, pos.y, pos.z, 1, 0.04D, 0.04D, 0.04D, 0.0D);
+		}
+		Box searchBox = player.getBoundingBox().stretch(forward.multiply(range)).expand(range * 0.5D);
+		for (Entity target : world.getOtherEntities(player, searchBox, entity -> canHit(player, entity))) {
+			Vec3d targetPos = target.getBoundingBox().getCenter();
+			Vec3d toTarget = targetPos.subtract(start);
+			if (toTarget.length() > range || toTarget.normalize().dotProduct(forward) < coneDot || isBlocked(world, player, start, targetPos)) {
+				continue;
+			}
+			target.damage(world, player.getDamageSources().playerAttack(player), 2.0F);
+			target.setOnFireFor(3.0F);
+		}
+		world.playSound(null, player.getBlockPos(), SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.PLAYERS, 0.55F, 0.8F);
+		stack.damage(1, player, EquipmentSlot.MAINHAND);
+	}
+
 	private static boolean isBlocked(ServerWorld world, ServerPlayerEntity player, Vec3d start, Vec3d end) {
 		BlockHitResult hit = world.raycast(new RaycastContext(
 				start,
@@ -218,6 +350,82 @@ public final class SniperRifleServer {
 		}
 	}
 
+	private static Vec3d applySpread(Vec3d direction, ServerWorld world, double spreadDegrees) {
+		if (spreadDegrees <= 0.0D) {
+			return direction;
+		}
+		double spread = Math.tan(Math.toRadians(spreadDegrees));
+		Vec3d random = new Vec3d(
+				(world.random.nextDouble() - 0.5D) * spread,
+				(world.random.nextDouble() - 0.5D) * spread,
+				(world.random.nextDouble() - 0.5D) * spread
+		);
+		return direction.add(random).normalize();
+	}
+
+	private static void spawnLineParticles(ServerWorld world, Vec3d start, Vec3d end, net.minecraft.particle.ParticleEffect particle, double spacing) {
+		Vec3d delta = end.subtract(start);
+		double length = delta.length();
+		if (length <= 0.001D) {
+			return;
+		}
+		Vec3d direction = delta.normalize();
+		for (double traveled = 0.0D; traveled <= length; traveled += spacing) {
+			Vec3d pos = start.add(direction.multiply(traveled));
+			world.spawnParticles(particle, pos.x, pos.y, pos.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+		}
+	}
+
+	private static void spawnRailgunBeam(ServerWorld world, Vec3d start, Vec3d end) {
+		Vec3d delta = end.subtract(start);
+		double length = delta.length();
+		if (length <= 0.001D) {
+			return;
+		}
+		Vec3d direction = delta.normalize();
+		Vec3d side = perpendicular(direction);
+		Vec3d up = side.crossProduct(direction).normalize();
+		for (double traveled = 0.0D; traveled <= length; traveled += 0.28D) {
+			Vec3d center = start.add(direction.multiply(traveled));
+			world.spawnParticles(ParticleTypes.END_ROD, center.x, center.y, center.z, 2, 0.015D, 0.015D, 0.015D, 0.0D);
+			for (double radius : new double[]{0.12D, -0.12D, 0.22D, -0.22D}) {
+				Vec3d sidePos = center.add(side.multiply(radius));
+				Vec3d upPos = center.add(up.multiply(radius));
+				world.spawnParticles(ParticleTypes.CLOUD, sidePos.x, sidePos.y, sidePos.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+				world.spawnParticles(ParticleTypes.CLOUD, upPos.x, upPos.y, upPos.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+			}
+		}
+	}
+
+	private static void spawnRailgunMuzzleRing(ServerWorld world, Vec3d center, Vec3d direction) {
+		Vec3d side = perpendicular(direction);
+		Vec3d up = side.crossProduct(direction).normalize();
+		for (int i = 0; i < 32; i++) {
+			double angle = i * Math.PI * 2.0D / 32.0D;
+			Vec3d pos = center
+					.add(side.multiply(Math.cos(angle) * 0.75D))
+					.add(up.multiply(Math.sin(angle) * 0.75D));
+			world.spawnParticles(ParticleTypes.CLOUD, pos.x, pos.y, pos.z, 2, 0.01D, 0.01D, 0.01D, 0.0D);
+			world.spawnParticles(ParticleTypes.END_ROD, pos.x, pos.y, pos.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+		}
+	}
+
+	private static Vec3d perpendicular(Vec3d direction) {
+		Vec3d side = direction.crossProduct(new Vec3d(0.0D, 1.0D, 0.0D));
+		if (side.lengthSquared() < 1.0E-4D) {
+			side = direction.crossProduct(new Vec3d(1.0D, 0.0D, 0.0D));
+		}
+		return side.normalize();
+	}
+
+	private static boolean isHoldingAdvancedWeapon(ServerPlayerEntity player, AdvancedWeaponFirePayload.Weapon weapon) {
+		return switch (weapon) {
+			case SMG -> player.getMainHandStack().isOf(Guns.SMG);
+			case FLAMETHROWER -> player.getMainHandStack().isOf(Guns.FLAMETHROWER);
+			case RAILGUN -> player.getMainHandStack().isOf(Guns.RAILGUN);
+		};
+	}
+
 	private static boolean canHit(ServerPlayerEntity player, Entity entity) {
 		return entity != player && entity.canHit() && entity.isAttackable() && !entity.isSpectator();
 	}
@@ -233,6 +441,8 @@ public final class SniperRifleServer {
 		SHOTGUN_COOLDOWNS.entrySet().removeIf(entry -> entry.getValue() <= 0);
 		GRENADE_LAUNCHER_COOLDOWNS.replaceAll((uuid, ticks) -> ticks - 1);
 		GRENADE_LAUNCHER_COOLDOWNS.entrySet().removeIf(entry -> entry.getValue() <= 0);
+		ADVANCED_COOLDOWNS.replaceAll((key, ticks) -> ticks - 1);
+		ADVANCED_COOLDOWNS.entrySet().removeIf(entry -> entry.getValue() <= 0);
 	}
 
 	private static void tickBulletTraces() {
@@ -258,6 +468,7 @@ public final class SniperRifleServer {
 		FIRE_COOLDOWNS.remove(player.getUuid());
 		SHOTGUN_COOLDOWNS.remove(player.getUuid());
 		GRENADE_LAUNCHER_COOLDOWNS.remove(player.getUuid());
+		ADVANCED_COOLDOWNS.keySet().removeIf(key -> key.startsWith(player.getUuid().toString()));
 	}
 
 	private record BulletTrace(ServerWorld world, Vec3d start, Vec3d end, int age) {

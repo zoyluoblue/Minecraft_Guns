@@ -1,0 +1,543 @@
+{
+	"credit": "Guns flamethrower model",
+	"textures": {
+		"body": "guns:item/flamethrower",
+		"particle": "guns:item/flamethrower"
+	},
+	"elements": [
+		{
+			"name": "stock",
+			"from": [
+				-2,
+				5.8,
+				6.3
+			],
+			"to": [
+				3.5,
+				9.1,
+				9.7
+			],
+			"faces": {
+				"north": {
+					"uv": [
+						0,
+						0,
+						6,
+						4
+					],
+					"texture": "#body"
+				},
+				"south": {
+					"uv": [
+						0,
+						0,
+						6,
+						4
+					],
+					"texture": "#body"
+				},
+				"east": {
+					"uv": [
+						0,
+						0,
+						6,
+						4
+					],
+					"texture": "#body"
+				},
+				"west": {
+					"uv": [
+						0,
+						0,
+						6,
+						4
+					],
+					"texture": "#body"
+				},
+				"up": {
+					"uv": [
+						0,
+						0,
+						6,
+						4
+					],
+					"texture": "#body"
+				},
+				"down": {
+					"uv": [
+						0,
+						0,
+						6,
+						4
+					],
+					"texture": "#body"
+				}
+			}
+		},
+		{
+			"name": "receiver",
+			"from": [
+				3.1,
+				7,
+				5.8
+			],
+			"to": [
+				10,
+				10,
+				10.2
+			],
+			"faces": {
+				"north": {
+					"uv": [
+						4,
+						4,
+						11,
+						8
+					],
+					"texture": "#body"
+				},
+				"south": {
+					"uv": [
+						4,
+						4,
+						11,
+						8
+					],
+					"texture": "#body"
+				},
+				"east": {
+					"uv": [
+						4,
+						4,
+						11,
+						8
+					],
+					"texture": "#body"
+				},
+				"west": {
+					"uv": [
+						4,
+						4,
+						11,
+						8
+					],
+					"texture": "#body"
+				},
+				"up": {
+					"uv": [
+						4,
+						4,
+						11,
+						8
+					],
+					"texture": "#body"
+				},
+				"down": {
+					"uv": [
+						4,
+						4,
+						11,
+						8
+					],
+					"texture": "#body"
+				}
+			}
+		},
+		{
+			"name": "barrel",
+			"from": [
+				9.5,
+				8.1,
+				7
+			],
+			"to": [
+				19,
+				9.4,
+				9
+			],
+			"faces": {
+				"north": {
+					"uv": [
+						0,
+						10,
+						11,
+						12
+					],
+					"texture": "#body"
+				},
+				"south": {
+					"uv": [
+						0,
+						10,
+						11,
+						12
+					],
+					"texture": "#body"
+				},
+				"east": {
+					"uv": [
+						0,
+						10,
+						11,
+						12
+					],
+					"texture": "#body"
+				},
+				"west": {
+					"uv": [
+						0,
+						10,
+						11,
+						12
+					],
+					"texture": "#body"
+				},
+				"up": {
+					"uv": [
+						0,
+						10,
+						11,
+						12
+					],
+					"texture": "#body"
+				},
+				"down": {
+					"uv": [
+						0,
+						10,
+						11,
+						12
+					],
+					"texture": "#body"
+				}
+			}
+		},
+		{
+			"name": "muzzle",
+			"from": [
+				18,
+				7.5,
+				6.4
+			],
+			"to": [
+				19.7,
+				10.1,
+				9.6
+			],
+			"faces": {
+				"north": {
+					"uv": [
+						12,
+						0,
+						15,
+						4
+					],
+					"texture": "#body"
+				},
+				"south": {
+					"uv": [
+						12,
+						0,
+						15,
+						4
+					],
+					"texture": "#body"
+				},
+				"east": {
+					"uv": [
+						12,
+						0,
+						15,
+						4
+					],
+					"texture": "#body"
+				},
+				"west": {
+					"uv": [
+						12,
+						0,
+						15,
+						4
+					],
+					"texture": "#body"
+				},
+				"up": {
+					"uv": [
+						12,
+						0,
+						15,
+						4
+					],
+					"texture": "#body"
+				},
+				"down": {
+					"uv": [
+						12,
+						0,
+						15,
+						4
+					],
+					"texture": "#body"
+				}
+			}
+		},
+		{
+			"name": "grip",
+			"from": [
+				4.5,
+				2.4,
+				6.5
+			],
+			"to": [
+				6.4,
+				7.2,
+				9.5
+			],
+			"rotation": {
+				"origin": [
+					5.5,
+					7,
+					8
+				],
+				"axis": "z",
+				"angle": -22.5
+			},
+			"faces": {
+				"north": {
+					"uv": [
+						9,
+						0,
+						12,
+						5
+					],
+					"texture": "#body"
+				},
+				"south": {
+					"uv": [
+						9,
+						0,
+						12,
+						5
+					],
+					"texture": "#body"
+				},
+				"east": {
+					"uv": [
+						9,
+						0,
+						12,
+						5
+					],
+					"texture": "#body"
+				},
+				"west": {
+					"uv": [
+						9,
+						0,
+						12,
+						5
+					],
+					"texture": "#body"
+				},
+				"up": {
+					"uv": [
+						9,
+						0,
+						12,
+						5
+					],
+					"texture": "#body"
+				},
+				"down": {
+					"uv": [
+						9,
+						0,
+						12,
+						5
+					],
+					"texture": "#body"
+				}
+			}
+		},
+		{
+			"name": "fuel_tank",
+			"from": [
+				9,
+				4.8,
+				5.6
+			],
+			"to": [
+				15,
+				7.2,
+				10.4
+			],
+			"faces": {
+				"north": {
+					"uv": [
+						0,
+						12,
+						7,
+						15
+					],
+					"texture": "#body"
+				},
+				"south": {
+					"uv": [
+						0,
+						12,
+						7,
+						15
+					],
+					"texture": "#body"
+				},
+				"east": {
+					"uv": [
+						0,
+						12,
+						7,
+						15
+					],
+					"texture": "#body"
+				},
+				"west": {
+					"uv": [
+						0,
+						12,
+						7,
+						15
+					],
+					"texture": "#body"
+				},
+				"up": {
+					"uv": [
+						0,
+						12,
+						7,
+						15
+					],
+					"texture": "#body"
+				},
+				"down": {
+					"uv": [
+						0,
+						12,
+						7,
+						15
+					],
+					"texture": "#body"
+				}
+			}
+		}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [
+				0,
+				90,
+				55
+			],
+			"translation": [
+				0,
+				2,
+				1
+			],
+			"scale": [
+				1,
+				1,
+				1
+			]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [
+				0,
+				-90,
+				-55
+			],
+			"translation": [
+				0,
+				2,
+				1
+			],
+			"scale": [
+				1,
+				1,
+				1
+			]
+		},
+		"firstperson_righthand": {
+			"rotation": [
+				0,
+				90,
+				18
+			],
+			"translation": [
+				1,
+				2,
+				1
+			],
+			"scale": [
+				0.88,
+				0.88,
+				0.88
+			]
+		},
+		"firstperson_lefthand": {
+			"rotation": [
+				0,
+				-90,
+				-18
+			],
+			"translation": [
+				1,
+				2,
+				1
+			],
+			"scale": [
+				0.88,
+				0.88,
+				0.88
+			]
+		},
+		"gui": {
+			"rotation": [
+				30,
+				135,
+				0
+			],
+			"translation": [
+				-1,
+				0,
+				0
+			],
+			"scale": [
+				0.76,
+				0.76,
+				0.76
+			]
+		},
+		"ground": {
+			"translation": [
+				0,
+				3,
+				0
+			],
+			"scale": [
+				0.6,
+				0.6,
+				0.6
+			]
+		},
+		"fixed": {
+			"rotation": [
+				0,
+				90,
+				0
+			],
+			"scale": [
+				1,
+				1,
+				1
+			]
+		}
+	}
+}
