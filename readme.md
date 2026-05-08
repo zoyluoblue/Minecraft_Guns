@@ -1,3 +1,15 @@
+# 项目地址
+
+## 演示
+
+<video src="[./demo/guns.mp4](https://www.youtube.com/watch?v=7KhDonhsX98)" controls width="100%"></video>
+
+[无法播放时点击查看演示视频](https://www.youtube.com/watch?v=7KhDonhsX98)
+
+![演示 1](./demo/gun1.png)
+
+![演示 2](./demo/gun2.png)
+
 # Guns 2.0.0
 
 适用于 Minecraft `1.21.3`、Fabric Loader `0.18.4` 的 Fabric 枪械模组。
