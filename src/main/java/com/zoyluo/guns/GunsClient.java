@@ -1,5 +1,6 @@
 package com.zoyluo.guns;
 
+import com.zoyluo.guns.client.GunParticlesClient;
 import com.zoyluo.guns.client.SniperScopeController;
 import com.zoyluo.guns.network.AdvancedWeaponFirePayload;
 import com.zoyluo.guns.network.GrenadeLauncherFirePayload;
@@ -22,6 +23,7 @@ public class GunsClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
+		GunParticlesClient.register();
 		ClientTickEvents.END_CLIENT_TICK.register(GunsClient::tick);
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> SniperScopeController.clear());
 		HudRenderCallback.EVENT.register(SniperScopeController::render);

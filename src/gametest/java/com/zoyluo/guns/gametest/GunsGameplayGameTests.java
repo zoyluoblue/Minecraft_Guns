@@ -6,6 +6,7 @@ import com.zoyluo.guns.recipe.GunUpgradeRecipe;
 import com.zoyluo.guns.registry.ModItems;
 import com.zoyluo.guns.upgrade.GunUpgrade;
 import com.zoyluo.guns.upgrade.GunUpgradeService;
+import com.zoyluo.guns.visual.BallisticsVisuals;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
@@ -135,6 +136,24 @@ public final class GunsGameplayGameTests implements FabricGameTest {
 				new ItemStack(ModItems.PRECISION_BARREL)
 		);
 		require(context, !recipe.matches(duplicateInput, context.getWorld()), "duplicate Smithing module was accepted");
+		context.complete();
+	}
+
+	@GameTest(templateName = FabricGameTest.EMPTY_STRUCTURE, tickLimit = 20)
+	public void ballisticsSamplingHasHardBudgets(TestContext context) {
+		require(context, BallisticsVisuals.sampleCount(0.0D, 1.60D, 80) == 0, "zero-length tracer generated samples");
+		require(context, BallisticsVisuals.sampleCount(Double.NaN, 1.60D, 80) == 0, "invalid tracer length generated samples");
+		require(context, BallisticsVisuals.sampleCount(128.0D, 1.60D, BallisticsVisuals.SNIPER_MAX_SAMPLES) == BallisticsVisuals.SNIPER_MAX_SAMPLES, "sniper solid-round effect exceeded or missed its hard cap");
+		require(context, BallisticsVisuals.sampleCount(8.0D, 2.15D, BallisticsVisuals.SHOTGUN_MAX_SAMPLES_PER_PELLET) == BallisticsVisuals.SHOTGUN_MAX_SAMPLES_PER_PELLET, "shotgun range-effect cap mismatch");
+		require(context, BallisticsVisuals.sampleCount(32.0D, 2.80D, BallisticsVisuals.SMG_MAX_SAMPLES) == BallisticsVisuals.SMG_MAX_SAMPLES, "SMG solid-round effect cap mismatch");
+
+		require(context, BallisticsVisuals.railgunWorstCaseCalls() == 172, "railgun visual composition call count changed unexpectedly");
+		require(context, BallisticsVisuals.railgunWorstCaseCalls() <= BallisticsVisuals.RAILGUN_MAX_CALLS, "railgun visual composition exceeds its hard budget");
+		require(context, BallisticsVisuals.RAILGUN_FADE_TICKS == 20, "railgun beam must fade over exactly one second");
+		require(context, BallisticsVisuals.RAILGUN_VISIBLE_ENTITY_HITS == 4, "railgun visible entity impact limit changed");
+		require(context, BallisticsVisuals.SHOTGUN_PELLETS == 7, "shotgun visual pellet count changed");
+		require(context, BallisticsVisuals.FLAMETHROWER_MAX_PARTICLES == 6, "flamethrower moving-particle budget changed");
+		require(context, BallisticsVisuals.GRENADE_TRAIL_MAX_PARTICLES == 3, "grenade trail visual budget changed");
 		context.complete();
 	}
 

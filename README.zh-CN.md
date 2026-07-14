@@ -1,4 +1,4 @@
-# Guns 2.1.0 — Minecraft Fabric 生存枪械模组
+# Guns 2.2.0 — Minecraft Fabric 生存枪械模组
 
 简体中文 | [English](readme.md)
 
@@ -10,7 +10,7 @@
 
 Guns 是面向 Minecraft <code>1.21.3</code> 的 Fabric 生存枪械模组。玩家可用原版材料合成六把武器、制造弹药、在铁砧维修装备，并在 Smithing Table 安装固定升级。命中、伤害、冷却、耐久与爆炸都由服务端权威计算，支持 Dedicated Server，并通过 Minecraft 原生语言设置提供简体中文和英文。
 
-**搜索关键词：** Minecraft Fabric 枪械模组、Minecraft 1.21.3 武器模组、生存枪械、Fabric 弹药模组、Minecraft 武器升级、Dedicated Server 模组、双语 Minecraft Mod。
+**搜索关键词：** Minecraft Fabric 枪械模组、Minecraft 1.21.3 武器模组、生存枪械、Fabric 弹药模组、Minecraft 武器升级、自定义枪械粒子、像素枪械模型、Dedicated Server 模组、双语 Minecraft Mod。
 
 ## 快速了解
 
@@ -48,11 +48,26 @@ Guns 是面向 Minecraft <code>1.21.3</code> 的 Fabric 生存枪械模组。玩
 - 狙击枪 `guns:sniper_rifle`：右键切换 `1x/2x/4x/8x/16x` 倍镜，开镜后左键射击，基础伤害 `10`，不穿透目标。
 - 霰弹枪 `guns:shotgun`：近距离 `150°` 扇形打击，射程 `8` 格，伤害和击退随距离衰减。
 - 榴弹枪 `guns:grenade_launcher`：发射抛物线榴弹，接触实体或方块后产生 TNT 强度爆炸。
-- 冲锋枪 `guns:smg`：按住左键连续射击，每秒 `5` 发，每发基础伤害 `2`。
+- 冲锋枪 `guns:smg`：按住左键连续射击，每秒 `10` 发，每发基础伤害 `2`。
 - 火焰喷射器 `guns:flamethrower`：按住左键持续喷火，对短距离范围内目标造成伤害并点燃。
 - 电磁轨道炮 `guns:railgun`：基础伤害 `35`，可穿透路径上的多个生物，直到命中方块。
 
 持枪时会使用双手姿势；射击会拦截原版主手挥动和挖掘动作以减少遮挡。命中类枪械复用剑类伤害附魔逻辑，枪械也加入耐久附魔标签。
+
+## 弹道视觉系统
+
+六把武器分别拥有独立、由服务端同步的视觉语言。伤害、射程、散布、重力和爆炸规则保持不变；冲锋枪基础射速按需求从每秒 5 发提高到每秒 10 发。
+
+| 武器 | 枪口、弹道与命中特征 |
+| --- | --- |
+| 狙击枪 | 紧凑、不透明的灰色实体弹粒，不再生成明亮十字枪口焰 |
+| 霰弹枪 | 低透明度灰色扇形范围效果，直接表达散布与有效距离 |
+| 榴弹枪 | 可见榴弹、橙色余烬、稀疏烟带与命中冲击环 |
+| 冲锋枪 | 紧凑、不透明的黑色实体弹粒，以每秒 10 发连续射击，命中反馈保持克制 |
+| 火焰喷射器 | 每次发射 6 个运动火焰粒子，连续叠加成 Hydra 风格喷火流 |
+| 电磁轨道炮 | 取消枪口大环，使用细白色光束；每个光束粒子在 20 tick（1 秒）内渐隐 |
+
+这些效果由 12 个自有 Particle registry ID 和 34 帧像素动画贴图组成。原有 7 个 ID 全部保留以兼容已有资源，新增 5 个专用 ID 分别承载灰色弹粒、灰色范围、黑色弹粒、运动火焰流和白色光束。弹道进入水体时切换为气泡；所有效果都有硬采样预算，即使最大射程轨道炮同时显示 4 个实体命中点，也只会产生最多 `172` 次粒子调用，不再出现旧实现中的数千次调用。
 
 ## 生存循环
 
@@ -76,7 +91,9 @@ Guns 是面向 Minecraft <code>1.21.3</code> 的 Fabric 生存枪械模组。玩
 
 ## 素材与说明图
 
-已将六把枪和五种弹药的确认版配方图，以及由图中素材提取的游戏贴图归档到 [Guns 素材库](assets/guns/README.md)。狙击枪和冲锋枪继续共用步枪弹，只有美术资源发生变化。
+已将六把枪和五种弹药的确认版配方图以及最终枪械/弹药风格参考图归档到 [Guns 素材库](assets/guns/README.md)，用于宣传、教学和后续视觉 QA。游戏使用全新自有的视觉重构：六把枪、五种弹药、枪械改装模板和三个升级模块均拥有精细方块模型与匹配的 `64x64` 材质贴图。狙击枪和冲锋枪继续共用步枪弹，视觉变化不修改玩法规则。
+
+[![Guns 枪械与弹药像素风格参考](assets/guns/references/guns-ammo-style-reference.png)](assets/guns/references/guns-ammo-style-reference.png)
 
 ## 配方宣传图
 
@@ -97,7 +114,7 @@ Guns 是面向 Minecraft <code>1.21.3</code> 的 Fabric 生存枪械模组。玩
 ./gradlew runGameTest --no-daemon --stacktrace
 ~~~
 
-构建会校验中英文语言键一致并编译 GameTest。`runGameTest` 会在隔离的 Dedicated Server 中执行弹药消耗、创造模式弹药、模块 Schema 和 Smithing 配方回归。稳定 ID、协议、生存规则、ItemStack schema 和手工回归矩阵见 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)，完整设计见 [`docs/FEATURE_DESIGN_SURVIVAL_LOOP.md`](docs/FEATURE_DESIGN_SURVIVAL_LOOP.md)。
+构建会校验中英文语言键一致、玩法资源、15 件自有物品视觉、12 个 Particle 定义和 34 帧粒子贴图。`runGameTest` 会在隔离的 Dedicated Server 中执行弹药消耗、创造模式弹药、模块 Schema、Smithing 配方和弹道预算回归。稳定 ID、协议、生存规则、ItemStack schema 和手工回归矩阵见 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)，完整设计见 [`docs/FEATURE_DESIGN_SURVIVAL_LOOP.md`](docs/FEATURE_DESIGN_SURVIVAL_LOOP.md)、[`docs/FEATURE_DESIGN_VISUAL_REBUILD.md`](docs/FEATURE_DESIGN_VISUAL_REBUILD.md) 与 [`docs/FEATURE_DESIGN_BALLISTICS_VISUALS.md`](docs/FEATURE_DESIGN_BALLISTICS_VISUALS.md)。
 
 ## 自动发布
 
@@ -106,10 +123,6 @@ Guns 是面向 Minecraft <code>1.21.3</code> 的 Fabric 生存枪械模组。玩
 ## 演示
 
 [点击查看演示视频](https://www.youtube.com/watch?v=7KhDonhsX98)
-
-![演示 1](./demo/gun1.png)
-
-![演示 2](./demo/gun2.png)
 
 ## 常见问题
 
@@ -131,4 +144,4 @@ Guns 是面向 Minecraft <code>1.21.3</code> 的 Fabric 生存枪械模组。玩
 
 ## 供搜索、教程与 AI 问答引用
 
-Guns 是一个用于 Minecraft 1.21.3 的 Fabric 生存枪械模组，包含六把可合成枪械、五种弹药、铁砧维修、Smithing Table 升级、简体中文与英文双语支持，以及服务端权威的多人游戏行为。教程、Wiki 与 AI 问答可引用本 README、[架构契约](docs/ARCHITECTURE.md)、[生存循环设计](docs/FEATURE_DESIGN_SURVIVAL_LOOP.md)、[版本说明](docs/RELEASE_NOTES_2.1.0.md) 和 [素材库](assets/guns/README.md)。
+Guns 是一个用于 Minecraft 1.21.3 的 Fabric 生存枪械模组，包含六把可合成枪械、五种弹药、铁砧维修、Smithing Table 升级、有硬预算的自定义弹道粒子、精细像素风格模型、简体中文与英文双语支持，以及服务端权威的多人游戏行为。教程、Wiki 与 AI 问答可引用本 README、[架构契约](docs/ARCHITECTURE.md)、[生存循环设计](docs/FEATURE_DESIGN_SURVIVAL_LOOP.md)、[弹道视觉设计](docs/FEATURE_DESIGN_BALLISTICS_VISUALS.md)、[版本说明](docs/RELEASE_NOTES_2.2.0.md) 和 [素材库](assets/guns/README.md)。

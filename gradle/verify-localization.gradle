@@ -145,3 +145,213 @@ tasks.register("verifyGameplayResources") {
 tasks.named("check") {
 	dependsOn tasks.named("verifyGameplayResources")
 }
+
+def visualModelDirectory = file("src/main/resources/assets/guns/models/item")
+def visualTextureDirectory = file("src/main/resources/assets/guns/textures/item")
+def rebuiltVisualItems = [
+		"sniper_rifle", "shotgun", "grenade_launcher", "smg", "flamethrower", "railgun",
+		"rifle_round", "shotgun_shell", "grenade_round", "fuel_cell", "railgun_cell",
+		"upgrade_template", "precision_barrel", "cooling_system", "reinforced_receiver"
+]
+def requiredDisplayContexts = [
+		"gui", "ground", "fixed", "thirdperson_righthand", "thirdperson_lefthand",
+		"firstperson_righthand", "firstperson_lefthand"
+]
+
+tasks.register("verifyVisualAssets") {
+	group = "verification"
+	description = "Checks that every Guns item uses an owned 64x64 texture and detailed custom model."
+	inputs.files(
+			fileTree(visualModelDirectory),
+			fileTree(visualTextureDirectory),
+			file("assets/guns/asset-manifest.json"),
+			file("assets/guns/references/guns-ammo-style-reference.png")
+	)
+
+	doLast {
+		def parser = new JsonSlurper()
+		def pngSignature = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a].collect { (byte) it } as byte[]
+		def missingModels = rebuiltVisualItems.findAll { !new File(visualModelDirectory, "${it}.json").isFile() }
+		def missingTextures = rebuiltVisualItems.findAll { !new File(visualTextureDirectory, "${it}.png").isFile() }
+		if (!missingModels.isEmpty() || !missingTextures.isEmpty()) {
+			throw new GradleException("Missing rebuilt visual resources; models=${missingModels}, textures=${missingTextures}")
+		}
+
+			rebuiltVisualItems.each { item ->
+			def modelFile = new File(visualModelDirectory, "${item}.json")
+			def modelText = modelFile.getText("UTF-8")
+			def model = parser.parse(modelFile)
+			if (modelText.contains("minecraft:item/") || model.parent == "minecraft:item/generated") {
+				throw new GradleException("${modelFile}: rebuilt visuals may not use a vanilla item texture or generated parent")
+			}
+			if (model.textures?.body != "guns:item/${item}" || model.textures?.particle != "guns:item/${item}") {
+				throw new GradleException("${modelFile}: body and particle must reference guns:item/${item}")
+			}
+			if (!(model.elements instanceof List) || model.elements.isEmpty()) {
+				throw new GradleException("${modelFile}: custom cuboid elements are required")
+			}
+			def minimumElements = item in ["sniper_rifle", "shotgun", "grenade_launcher", "smg", "flamethrower", "railgun"] ? 12 : 5
+			if (model.elements.size() < minimumElements) {
+				throw new GradleException("${modelFile}: expected at least ${minimumElements} detailed cuboid elements, found ${model.elements.size()}")
+			}
+			model.elements.eachWithIndex { element, index ->
+				if (!(element.from instanceof List) || !(element.to instanceof List) || element.from.size() != 3 || element.to.size() != 3) {
+					throw new GradleException("${modelFile}: element ${index} must define three-axis from/to bounds")
+				}
+				(0..<3).each { axis ->
+					def start = element.from[axis]
+					def end = element.to[axis]
+					if (!(start instanceof Number) || !(end instanceof Number) || start < 0 || end > 16 || start >= end) {
+						throw new GradleException("${modelFile}: element ${index} has invalid axis ${axis} bounds ${start}..${end}")
+					}
+				}
+				if (!(element.faces instanceof Map) || element.faces.size() != 6) {
+					throw new GradleException("${modelFile}: element ${index} must define all six cuboid faces")
+				}
+				element.faces.each { side, face ->
+					if (face.texture != "#body" || !(face.uv instanceof List) || face.uv.size() != 4 || face.uv.any { !(it instanceof Number) || it < 0 || it > 16 }) {
+						throw new GradleException("${modelFile}: element ${index} face ${side} has an invalid owned texture or UV")
+					}
+				}
+			}
+			if (!(model.display instanceof Map) || !model.display.keySet().containsAll(requiredDisplayContexts)) {
+				throw new GradleException("${modelFile}: all inventory and hand display contexts are required")
+			}
+
+			def png = new File(visualTextureDirectory, "${item}.png").bytes
+			if (png.length < 26 || !java.util.Arrays.equals(java.util.Arrays.copyOfRange(png, 0, 8), pngSignature)) {
+				throw new GradleException("${item}.png is not a PNG")
+			}
+			def width = ((png[16] & 0xff) << 24) | ((png[17] & 0xff) << 16) | ((png[18] & 0xff) << 8) | (png[19] & 0xff)
+			def height = ((png[20] & 0xff) << 24) | ((png[21] & 0xff) << 16) | ((png[22] & 0xff) << 8) | (png[23] & 0xff)
+			if (width != 64 || height != 64 || png[24] != 8 || png[25] != 6) {
+				throw new GradleException("${item}.png must be a 64x64 RGBA PNG")
+			}
+		}
+
+		def manifest = parser.parse(file("assets/guns/asset-manifest.json"))
+		if (manifest.schema != 4 || manifest.visual_rebuild?.texture_size != [64, 64] || !(manifest.visual_rebuild?.items instanceof List) || manifest.visual_rebuild.items.toSet() != rebuiltVisualItems.collect { "guns:${it}" }.toSet()) {
+			throw new GradleException("assets/guns/asset-manifest.json must declare the complete visual rebuild")
+		}
+		def referenceFile = file("assets/guns/references/guns-ammo-style-reference.png")
+		if (!referenceFile.isFile()) {
+			throw new GradleException("Missing approved visual reference: ${referenceFile}")
+		}
+		def digest = java.security.MessageDigest.getInstance("SHA-256").digest(referenceFile.bytes).encodeHex().toString()
+		if (manifest.style_reference?.path != "assets/guns/references/guns-ammo-style-reference.png" || manifest.style_reference?.sha256 != digest) {
+			throw new GradleException("asset manifest style reference path or SHA-256 does not match the approved source")
+		}
+	}
+}
+
+tasks.named("check") {
+	dependsOn tasks.named("verifyVisualAssets")
+}
+
+def ballisticsParticleDirectory = file("src/main/resources/assets/guns/particles")
+def ballisticsParticleTextureDirectory = file("src/main/resources/assets/guns/textures/particle")
+def ballisticsParticleFrames = [
+		tracer: 2,
+		muzzle_flash: 3,
+		impact_spark: 3,
+		flame_core: 4,
+	energy_arc: 3,
+	blast_wave: 3,
+	shockwave: 3,
+	gray_round: 2,
+	gray_range: 2,
+	black_round: 2,
+	flame_jet: 4,
+	white_beam: 3
+]
+
+tasks.register("verifyBallisticsResources") {
+	group = "verification"
+	description = "Checks custom Guns particle registrations, definitions, animation frames, and server/client separation."
+	inputs.files(
+			fileTree(ballisticsParticleDirectory),
+		fileTree(ballisticsParticleTextureDirectory),
+		file("src/main/java/com/zoyluo/guns/registry/ModParticles.java"),
+		file("src/main/java/com/zoyluo/guns/visual/BallisticsVisuals.java"),
+		file("src/main/java/com/zoyluo/guns/network/SniperRifleServer.java"),
+		file("src/main/java/com/zoyluo/guns/client/GunParticle.java"),
+		file("src/main/java/com/zoyluo/guns/client/GunParticlesClient.java"),
+		file("assets/guns/asset-manifest.json")
+	)
+
+	doLast {
+		def parser = new JsonSlurper()
+		def pngSignature = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a].collect { (byte) it } as byte[]
+		def registrationSource = file("src/main/java/com/zoyluo/guns/registry/ModParticles.java").getText("UTF-8")
+		def serverVisualSource = file("src/main/java/com/zoyluo/guns/visual/BallisticsVisuals.java").getText("UTF-8")
+		def weaponServerSource = file("src/main/java/com/zoyluo/guns/network/SniperRifleServer.java").getText("UTF-8")
+		def clientParticleSource = file("src/main/java/com/zoyluo/guns/client/GunParticle.java").getText("UTF-8")
+		def clientRegistrationSource = file("src/main/java/com/zoyluo/guns/client/GunParticlesClient.java").getText("UTF-8")
+		if (serverVisualSource.contains("net.minecraft.client") || serverVisualSource.contains("com.zoyluo.guns.client")) {
+			throw new GradleException("BallisticsVisuals must remain safe for Dedicated Server class loading")
+		}
+
+		def expectedTextureIds = []
+		ballisticsParticleFrames.each { particle, frameCount ->
+			if (!registrationSource.contains("register(\"${particle}\")")) {
+				throw new GradleException("Missing particle registry ID guns:${particle}")
+			}
+			def constantName = particle.toUpperCase(java.util.Locale.ROOT)
+			if (!clientRegistrationSource.contains("ModParticles.${constantName}")) {
+				throw new GradleException("Missing client particle factory registration for guns:${particle}")
+			}
+			def definitionFile = new File(ballisticsParticleDirectory, "${particle}.json")
+			if (!definitionFile.isFile()) {
+				throw new GradleException("Missing particle definition: ${definitionFile}")
+			}
+			def definition = parser.parse(definitionFile)
+			def expectedFrames = (0..<frameCount).collect { "guns:${particle}_${it}" }
+			if (definition.textures != expectedFrames) {
+				throw new GradleException("${definitionFile}: expected texture frames ${expectedFrames}, found ${definition.textures}")
+			}
+			expectedTextureIds.addAll(expectedFrames)
+		}
+		["GRAY_ROUND", "GRAY_RANGE", "BLACK_ROUND", "FLAME_JET", "WHITE_BEAM"].each { particleConstant ->
+			if (!serverVisualSource.contains("ModParticles.${particleConstant}")) {
+				throw new GradleException("BallisticsVisuals does not use required low-obstruction particle ${particleConstant}")
+			}
+		}
+		if (!clientParticleSource.contains("WHITE_BEAM(BallisticsVisuals.RAILGUN_FADE_TICKS, 0")) {
+			throw new GradleException("White Railgun beam must use the exact common 20-tick fade contract")
+		}
+		if (!weaponServerSource.contains("SMG_COOLDOWN_TICKS = 2;") || !weaponServerSource.contains("cooldown(stack, SMG_COOLDOWN_TICKS)")) {
+			throw new GradleException("SMG must use the requested two-tick base cooldown")
+		}
+
+		expectedTextureIds.each { textureId ->
+			def path = textureId.substring("guns:".length())
+			def textureFile = new File(ballisticsParticleTextureDirectory, "${path}.png")
+			if (!textureFile.isFile()) {
+				throw new GradleException("Missing particle texture: ${textureFile}")
+			}
+			def png = textureFile.bytes
+			if (png.length < 26 || !java.util.Arrays.equals(java.util.Arrays.copyOfRange(png, 0, 8), pngSignature)) {
+				throw new GradleException("${textureFile} is not a PNG")
+			}
+			def width = ((png[16] & 0xff) << 24) | ((png[17] & 0xff) << 16) | ((png[18] & 0xff) << 8) | (png[19] & 0xff)
+			def height = ((png[20] & 0xff) << 24) | ((png[21] & 0xff) << 16) | ((png[22] & 0xff) << 8) | (png[23] & 0xff)
+			if (width != 16 || height != 16 || png[24] != 8 || png[25] != 6) {
+				throw new GradleException("${textureFile} must be a 16x16 RGBA PNG")
+			}
+		}
+
+		def actualTextures = fileTree(ballisticsParticleTextureDirectory).matching { include "*.png" }.files
+		if (actualTextures.size() != expectedTextureIds.size()) {
+			throw new GradleException("Expected exactly ${expectedTextureIds.size()} Guns particle textures, found ${actualTextures.size()}")
+		}
+		def manifest = parser.parse(file("assets/guns/asset-manifest.json"))
+		def expectedIds = ballisticsParticleFrames.keySet().collect { "guns:${it}" } as Set
+		if (manifest.ballistics_particles?.ids?.toSet() != expectedIds || manifest.ballistics_particles?.frame_count != expectedTextureIds.size()) {
+			throw new GradleException("asset manifest must declare all custom ballistic particle IDs and frames")
+		}
+	}
+}
+
+tasks.named("check") {
+	dependsOn tasks.named("verifyBallisticsResources")
+}

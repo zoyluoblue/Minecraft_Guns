@@ -6,6 +6,7 @@ import com.zoyluo.guns.network.SniperRifleServer;
 import com.zoyluo.guns.registry.ModEntities;
 import com.zoyluo.guns.registry.ModItemGroups;
 import com.zoyluo.guns.registry.ModItems;
+import com.zoyluo.guns.registry.ModParticles;
 import com.zoyluo.guns.registry.ModRecipes;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.entity.EntityType;
@@ -40,6 +41,7 @@ public class Guns implements ModInitializer {
 		ModItems.initialize();
 		ModRecipes.initialize();
 		ModEntities.initialize();
+		ModParticles.initialize();
 		ModItemGroups.initialize();
 		GunsNetworking.registerPayloadTypes();
 		SniperRifleServer.register();

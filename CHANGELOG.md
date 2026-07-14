@@ -4,6 +4,33 @@ All notable changes are documented here. Versions follow Semantic Versioning.
 
 所有重要变更均记录于此。版本号遵循 Semantic Versioning。
 
+## 2.2.0 — 2026-07-14
+
+### Changed / 变更
+
+- Rebuilt all six weapon, five ammunition, and four Gunsmithing item visuals with detailed custom cuboid models and owned `64x64` reference-matched material textures.
+- Replaced the six weapon trajectories with bounded, server-synchronized muzzle, flight, water, and impact compositions.
+- Expanded the stable custom Particle set from seven IDs/21 frames to 12 IDs/34 frames, adding gray Sniper rounds, a gray Shotgun range fan, black SMG rounds, moving flame jets, and a white Railgun beam.
+- Removed bright cross-shaped muzzle effects from the Sniper, Shotgun, SMG, Flamethrower, and Railgun; the Grenade Launcher keeps its existing orange blast language.
+- Rebuilt the Flamethrower as a continuous Hydra-inspired moving flame stream and changed the Railgun to a thin white beam that fades over exactly one second.
+- Doubled the SMG base cadence from five to ten shots per second (`4` ticks to `2` ticks).
+- Removed the delayed Sniper fake projectile and reduced the maximum Railgun visual composition from thousands of particle calls to a verified worst case of `172`.
+- Added deterministic asset generation, geometry/UV/resource validation, ballistic-budget GameTest coverage, and an archived SHA-256-pinned style reference.
+
+- 使用精细自定义方块模型和自有 `64x64` 参考图匹配材质，重做六把枪、五种弹药和四件枪械改装物品的全部视觉。
+- 将六把武器的弹道替换为有硬预算、由服务端同步的枪口、飞行、水下与命中效果。
+- 将稳定自定义 Particle 集从 7 个 ID/21 帧扩展为 12 个 ID/34 帧，新增灰色狙击弹粒、灰色霰弹范围、黑色 SMG 弹粒、运动火焰流和白色轨道炮光束。
+- 移除狙击枪、霰弹枪、SMG、喷火器和轨道炮的明亮十字枪口效果；榴弹枪保持现有橙色爆炸视觉。
+- 将喷火器重构为 Hydra 风格连续运动火焰流，并将轨道炮改成 1 秒渐隐的细白色光束。
+- 将 SMG 基础射速从每秒 5 发提高到每秒 10 发（`4` ticks 调整为 `2` ticks）。
+- 移除狙击枪延迟假弹丸，并将轨道炮从数千次粒子调用降至已验证最坏 `172` 次。
+- 新增确定性资源生成、模型几何/UV/资源校验、弹道预算 GameTest，以及带 SHA-256 固定值的参考图归档。
+
+### Compatibility / 兼容性
+
+- No third-party runtime dependency, Payload change, save-data migration, or existing item/entity/recipe/Particle ID removal. The only gameplay tuning change is the requested SMG cadence increase.
+- 不新增第三方运行时依赖，不改变 Payload 或存档 Schema，不删除现有物品、实体、配方或 Particle ID；唯一玩法数值变化是按需求提高 SMG 射速。
+
 ## 2.1.0 — 2026-07-14
 
 ### Added / 新增

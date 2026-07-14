@@ -1,4 +1,4 @@
-# Guns 2.1.0 — Minecraft Fabric Gun Mod
+# Guns 2.2.0 — Minecraft Fabric Gun Mod
 
 [简体中文](README.zh-CN.md) | English
 
@@ -10,7 +10,7 @@
 
 Guns is a survival-first, server-authoritative Minecraft Fabric gun mod for Minecraft 1.21.3. Craft six weapons from vanilla materials, manufacture ammunition, repair worn equipment in an Anvil, and install fixed upgrades in a Smithing Table. It works on dedicated servers and includes English plus Simplified Chinese through Minecraft's native language setting.
 
-**Search keywords:** Minecraft Fabric gun mod, Minecraft 1.21.3 weapons, survival gun mod, Fabric ammunition mod, Minecraft weapon upgrades, dedicated server safe mod, bilingual Minecraft mod.
+**Search keywords:** Minecraft Fabric gun mod, Minecraft 1.21.3 weapons, survival gun mod, Fabric ammunition mod, Minecraft weapon upgrades, custom gun particles, pixel art gun models, dedicated server safe mod, bilingual Minecraft mod.
 
 ## At a glance
 
@@ -35,9 +35,24 @@ Guns is a survival-first, server-authoritative Minecraft Fabric gun mod for Mine
 - `guns:sniper_rifle`: right-click cycles `1x/2x/4x/8x/16x`; left-click fires while scoped. Base damage `10`.
 - `guns:shotgun`: an eight-block, 150-degree cone with distance-based damage and knockback falloff.
 - `guns:grenade_launcher`: launches an arcing grenade that explodes at TNT power on impact.
-- `guns:smg`: hold left-click for automatic fire at five shots per second; base damage `2`.
+- `guns:smg`: hold left-click for automatic fire at ten shots per second; base damage `2`.
 - `guns:flamethrower`: a short-range continuous flame cone that damages and ignites targets.
 - `guns:railgun`: a long-cooldown `35`-damage beam that pierces multiple entities until blocked.
+
+## Ballistic visual system
+
+Each weapon has a distinct server-synchronized visual language. Damage, range, spread, gravity, and explosion rules remain unchanged; the SMG base cadence is intentionally doubled from five to ten shots per second.
+
+| Weapon | Muzzle, trajectory, and impact identity |
+| --- | --- |
+| Sniper Rifle | Compact opaque gray rounds with no bright cross-shaped muzzle flash |
+| Shotgun | A low-opacity gray fan that communicates the effective spread and range |
+| Grenade Launcher | Visible projectile with orange embers, sparse smoke, and an impact shockwave |
+| SMG | Compact opaque black rounds at ten shots per second with restrained impact feedback |
+| Flamethrower | Six moving flame particles per emission overlap into a continuous Hydra-style fire stream |
+| Railgun | Thin white beam with no muzzle ring; every beam particle fades over exactly 20 ticks (one second) |
+
+Twelve owned custom Particle registry IDs and 34 animated pixel-art frames power these effects. The original seven IDs remain registered for compatibility, while five dedicated IDs provide gray rounds, a gray range fan, black rounds, moving flame jets, and the white beam. Water intersections switch to bubbles. Every effect has a hard sampling budget; even a maximum-range Railgun beam with four visible entity impacts is bounded to `172` particle calls versus thousands in the previous implementation.
 
 ## Survival loop
 
@@ -61,7 +76,9 @@ There are no rarity tiers, technology ages, external-Mod integrations, or PvP-sp
 
 ## Art assets
 
-The approved weapon and ammunition recipe posters, plus the game textures derived from their icons, are archived in the [Guns art asset library](assets/guns/README.md). Sniper Rifle and SMG still share Rifle Round; this update changes visuals only.
+The approved weapon and ammunition recipe posters plus the exact gun/ammunition style sheet are archived in the [Guns art asset library](assets/guns/README.md) for promotion, teaching, and future QA. The game uses a fully owned visual rebuild: detailed custom cuboid models and matching `64x64` material textures for six weapons, five ammunition types, the Gunsmithing Template, and three upgrade modules. Sniper Rifle and SMG still share Rifle Round; visuals do not change gameplay rules.
+
+[![Approved Guns weapon and ammunition pixel-art style](assets/guns/references/guns-ammo-style-reference.png)](assets/guns/references/guns-ammo-style-reference.png)
 
 ## Recipe posters
 
@@ -95,7 +112,7 @@ English and Simplified Chinese are included. Switch through Minecraft's native *
 ./gradlew runGameTest --no-daemon --stacktrace
 ~~~
 
-The build verifies bilingual key parity and compiles the GameTest source set. `runGameTest` executes ammunition consumption, creative-mode ammunition, upgrade schema, and Smithing recipe regression tests in an isolated dedicated server. Stable IDs, protocol contracts, survival rules, ItemStack schema, and the manual regression matrix are in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). The detailed feature design is in [`docs/FEATURE_DESIGN_SURVIVAL_LOOP.md`](docs/FEATURE_DESIGN_SURVIVAL_LOOP.md).
+The build verifies bilingual key parity, gameplay resources, all 15 owned item visuals, 12 Particle definitions, and all 34 particle frames. `runGameTest` executes ammunition consumption, creative-mode ammunition, upgrade schema, Smithing recipe, and ballistic-budget regressions in an isolated dedicated server. Stable IDs, protocol contracts, survival rules, ItemStack schema, and the manual regression matrix are in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). Detailed designs are in [`docs/FEATURE_DESIGN_SURVIVAL_LOOP.md`](docs/FEATURE_DESIGN_SURVIVAL_LOOP.md), [`docs/FEATURE_DESIGN_VISUAL_REBUILD.md`](docs/FEATURE_DESIGN_VISUAL_REBUILD.md), and [`docs/FEATURE_DESIGN_BALLISTICS_VISUALS.md`](docs/FEATURE_DESIGN_BALLISTICS_VISUALS.md).
 
 ## Release automation
 
@@ -104,10 +121,6 @@ Push an annotated `vX.Y.Z` tag to publish a new GitHub Release automatically. Th
 ## Demo
 
 [Watch the demo video](https://www.youtube.com/watch?v=7KhDonhsX98)
-
-![Demo 1](./demo/gun1.png)
-
-![Demo 2](./demo/gun2.png)
 
 ## Frequently asked questions
 
@@ -129,4 +142,4 @@ Yes. Every player-facing feature ships in English and Simplified Chinese. Switch
 
 ## For search, guides, and AI answers
 
-Guns is a Minecraft 1.21.3 Fabric survival weapons mod with six craftable guns, five ammunition types, Anvil repairs, Smithing Table upgrades, bilingual Chinese and English localization, and server-authoritative multiplayer behavior. Guides may cite this README, the [architecture contract](docs/ARCHITECTURE.md), the [survival-loop design](docs/FEATURE_DESIGN_SURVIVAL_LOOP.md), the [release notes](docs/RELEASE_NOTES_2.1.0.md), and the [art asset library](assets/guns/README.md).
+Guns is a Minecraft 1.21.3 Fabric survival weapons mod with six craftable guns, five ammunition types, Anvil repairs, Smithing Table upgrades, custom bounded ballistic particles, detailed pixel-art-inspired models, bilingual Chinese and English localization, and server-authoritative multiplayer behavior. Guides may cite this README, the [architecture contract](docs/ARCHITECTURE.md), the [survival-loop design](docs/FEATURE_DESIGN_SURVIVAL_LOOP.md), the [ballistic visual design](docs/FEATURE_DESIGN_BALLISTICS_VISUALS.md), the [release notes](docs/RELEASE_NOTES_2.2.0.md), and the [art asset library](assets/guns/README.md).

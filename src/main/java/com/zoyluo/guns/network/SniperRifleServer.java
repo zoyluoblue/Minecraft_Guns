@@ -8,6 +8,7 @@ import com.zoyluo.guns.item.GrenadeLauncherItem;
 import com.zoyluo.guns.item.ShotgunItem;
 import com.zoyluo.guns.item.SniperRifleItem;
 import com.zoyluo.guns.upgrade.GunUpgradeService;
+import com.zoyluo.guns.visual.BallisticsVisuals;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -17,7 +18,6 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.ItemStack;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -33,7 +33,6 @@ import net.minecraft.world.RaycastContext;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.UUID;
 
@@ -43,12 +42,13 @@ public final class SniperRifleServer {
 	private static final Map<UUID, Integer> SHOTGUN_COOLDOWNS = new HashMap<>();
 	private static final Map<UUID, Integer> GRENADE_LAUNCHER_COOLDOWNS = new HashMap<>();
 	private static final Map<String, Integer> ADVANCED_COOLDOWNS = new HashMap<>();
-	private static final List<BulletTrace> BULLET_TRACES = new ArrayList<>();
 	private static final int FIRE_COOLDOWN_TICKS = 16;
 	private static final int SHOTGUN_COOLDOWN_TICKS = 22;
 	private static final int GRENADE_LAUNCHER_COOLDOWN_TICKS = 30;
-	private static final int BULLET_TRACE_TICKS = 6;
-	private static final int SHOTGUN_PELLETS = 12;
+	private static final int SMG_COOLDOWN_TICKS = 2;
+	private static final int FLAMETHROWER_COOLDOWN_TICKS = 2;
+	private static final int RAILGUN_COOLDOWN_TICKS = 60;
+	private static final int FLAMETHROWER_SOUND_INTERVAL_TICKS = 3;
 
 	private SniperRifleServer() {
 	}
@@ -64,7 +64,6 @@ public final class SniperRifleServer {
 		ServerTickEvents.END_SERVER_TICK.register(server -> {
 			tickCooldowns();
 			AmmoService.tick();
-			tickBulletTraces();
 		});
 	}
 
@@ -101,7 +100,8 @@ public final class SniperRifleServer {
 		}
 		double range = GunUpgradeService.range(stack, SniperRifleItem.RANGE);
 		Vec3d start = player.getEyePos();
-		Vec3d end = start.add(player.getRotationVec(1.0F).multiply(range));
+		Vec3d forward = player.getRotationVec(1.0F).normalize();
+		Vec3d end = start.add(forward.multiply(range));
 		BlockHitResult blockHit = world.raycast(new RaycastContext(
 				start,
 				end,
@@ -110,13 +110,15 @@ public final class SniperRifleServer {
 				player
 		));
 		double maxDistance = blockHit.getType() == HitResult.Type.BLOCK ? start.squaredDistanceTo(blockHit.getPos()) : range * range;
-		Box searchBox = player.getBoundingBox().stretch(player.getRotationVec(1.0F).multiply(range)).expand(1.0D);
+		Box searchBox = player.getBoundingBox().stretch(forward.multiply(range)).expand(1.0D);
 		EntityHitResult entityHit = ProjectileUtil.raycast(player, start, end, searchBox, entity -> canHit(player, entity), maxDistance);
 
 		Vec3d hitPos = blockHit.getType() == HitResult.Type.BLOCK ? blockHit.getPos() : end;
+		boolean impacted = blockHit.getType() == HitResult.Type.BLOCK;
 		if (entityHit != null) {
 			Entity target = entityHit.getEntity();
 			hitPos = entityHit.getPos();
+			impacted = true;
 			float damage = EnchantmentHelper.getDamage(world, stack, target, player.getDamageSources().playerAttack(player), GunUpgradeService.damage(stack, SniperRifleItem.BASE_DAMAGE));
 			target.damage(world, player.getDamageSources().playerAttack(player), damage);
 			EnchantmentHelper.onTargetDamaged(world, target, player.getDamageSources().playerAttack(player), stack);
@@ -124,8 +126,7 @@ public final class SniperRifleServer {
 
 		world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_GENERIC_EXPLODE.value(), SoundCategory.PLAYERS, 0.45F, 1.8F);
 		world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 0.85F, 0.55F);
-		BULLET_TRACES.add(new BulletTrace(world, start.add(player.getRotationVec(1.0F).multiply(1.35D)), hitPos, 0));
-		world.spawnParticles(ParticleTypes.SMOKE, hitPos.x, hitPos.y, hitPos.z, 8, 0.05D, 0.05D, 0.05D, 0.01D);
+		BallisticsVisuals.sniper(world, start.add(forward.multiply(1.35D)), hitPos, impacted);
 		stack.damage(1, player, EquipmentSlot.MAINHAND);
 		FIRE_COOLDOWNS.put(player.getUuid(), GunUpgradeService.cooldown(stack, FIRE_COOLDOWN_TICKS));
 	}
@@ -162,13 +163,21 @@ public final class SniperRifleServer {
 			target.damage(world, player.getDamageSources().playerAttack(player), damage);
 			EnchantmentHelper.onTargetDamaged(world, target, player.getDamageSources().playerAttack(player), stack);
 			applyShotgunKnockback(target, forward, blockDistance);
-			world.spawnParticles(ParticleTypes.SMOKE, targetPos.x, targetPos.y, targetPos.z, 4, 0.16D, 0.16D, 0.16D, 0.01D);
+			BallisticsVisuals.kineticHit(world, targetPos, 2);
 		}
 
-		spawnShotgunPellets(world, start.add(forward.multiply(0.9D)), forward, player.getYaw(), player.getPitch(), coneDegrees);
+		BallisticsVisuals.shotgun(
+				world,
+				player,
+				start.add(forward.multiply(0.9D)),
+				forward,
+				player.getYaw(),
+				player.getPitch(),
+				coneDegrees,
+				range
+		);
 		world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_GENERIC_EXPLODE.value(), SoundCategory.PLAYERS, 0.55F, 1.15F);
 		world.playSound(null, player.getBlockPos(), SoundEvents.ITEM_CROSSBOW_SHOOT, SoundCategory.PLAYERS, 0.9F, 0.65F);
-		world.spawnParticles(ParticleTypes.SMOKE, start.x + forward.x, start.y + forward.y, start.z + forward.z, 8, 0.08D, 0.08D, 0.08D, 0.02D);
 		stack.damage(1, player, EquipmentSlot.MAINHAND);
 		SHOTGUN_COOLDOWNS.put(player.getUuid(), GunUpgradeService.cooldown(stack, SHOTGUN_COOLDOWN_TICKS));
 	}
@@ -197,7 +206,7 @@ public final class SniperRifleServer {
 		world.spawnEntity(grenade);
 		world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_GENERIC_EXPLODE.value(), SoundCategory.PLAYERS, 0.35F, 1.55F);
 		world.playSound(null, player.getBlockPos(), SoundEvents.ITEM_CROSSBOW_SHOOT, SoundCategory.PLAYERS, 0.8F, 0.45F);
-		world.spawnParticles(ParticleTypes.SMOKE, grenade.getX(), grenade.getY(), grenade.getZ(), 10, 0.08D, 0.08D, 0.08D, 0.02D);
+		BallisticsVisuals.grenadeMuzzle(world, grenade.getPos(), forward);
 		stack.damage(1, player, EquipmentSlot.MAINHAND);
 		GRENADE_LAUNCHER_COOLDOWNS.put(player.getUuid(), GunUpgradeService.cooldown(stack, GRENADE_LAUNCHER_COOLDOWN_TICKS));
 	}
@@ -222,18 +231,17 @@ public final class SniperRifleServer {
 						GunUpgradeService.range(stack, 32.0D),
 						GunUpgradeService.damage(stack, 2.0F),
 						GunUpgradeService.spread(stack, 4.0D),
-						1,
-						ParticleTypes.SMOKE
+						1
 				);
-				setAdvancedCooldown(cooldownKey, GunUpgradeService.cooldown(stack, 4));
+				setAdvancedCooldown(cooldownKey, GunUpgradeService.cooldown(stack, SMG_COOLDOWN_TICKS));
 			}
 			case FLAMETHROWER -> {
 				fireFlamethrower(player);
-				setAdvancedCooldown(cooldownKey, GunUpgradeService.cooldown(stack, 2));
+				setAdvancedCooldown(cooldownKey, GunUpgradeService.cooldown(stack, FLAMETHROWER_COOLDOWN_TICKS));
 			}
 			case RAILGUN -> {
 				fireRailgun(player);
-				setAdvancedCooldown(cooldownKey, GunUpgradeService.cooldown(stack, 60));
+				setAdvancedCooldown(cooldownKey, GunUpgradeService.cooldown(stack, RAILGUN_COOLDOWN_TICKS));
 			}
 		}
 	}
@@ -250,7 +258,7 @@ public final class SniperRifleServer {
 		ADVANCED_COOLDOWNS.put(cooldownKey, ticks);
 	}
 
-	private static void fireHitscan(ServerPlayerEntity player, double range, float baseDamage, double spreadDegrees, int pierce, net.minecraft.particle.ParticleEffect particle) {
+	private static void fireHitscan(ServerPlayerEntity player, double range, float baseDamage, double spreadDegrees, int pierce) {
 		if (!(player.getWorld() instanceof ServerWorld world)) {
 			return;
 		}
@@ -281,7 +289,8 @@ public final class SniperRifleServer {
 				break;
 			}
 		}
-		spawnLineParticles(world, start.add(direction.multiply(0.7D)), visualEnd, particle, 0.65D);
+		boolean impacted = blockHit.getType() == HitResult.Type.BLOCK || hitCount > 0;
+		BallisticsVisuals.smg(world, start.add(direction.multiply(1.05D)), visualEnd, impacted);
 		world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 0.55F, spreadDegrees <= 0.0D ? 1.8F : 1.35F);
 		stack.damage(1, player, EquipmentSlot.MAINHAND);
 	}
@@ -313,9 +322,14 @@ public final class SniperRifleServer {
 			target.damage(world, player.getDamageSources().playerAttack(player), damage);
 			EnchantmentHelper.onTargetDamaged(world, target, player.getDamageSources().playerAttack(player), stack);
 		}
-		Vec3d muzzle = start.add(direction.multiply(0.95D));
-		spawnRailgunMuzzleRing(world, muzzle, direction);
-		spawnRailgunBeam(world, muzzle, visualEnd);
+		Vec3d muzzle = start.add(direction.multiply(1.40D));
+		BallisticsVisuals.railgun(
+				world,
+				muzzle,
+				visualEnd,
+				blockHit.getType() == HitResult.Type.BLOCK,
+				hits.stream().limit(BallisticsVisuals.RAILGUN_VISIBLE_ENTITY_HITS).map(EntityHitResult::getPos).toList()
+		);
 		world.playSound(null, player.getBlockPos(), SoundEvents.BLOCK_BEACON_POWER_SELECT, SoundCategory.PLAYERS, 1.0F, 0.6F);
 		world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_GENERIC_EXPLODE.value(), SoundCategory.PLAYERS, 0.45F, 1.9F);
 		stack.damage(2, player, EquipmentSlot.MAINHAND);
@@ -331,12 +345,14 @@ public final class SniperRifleServer {
 		double range = GunUpgradeService.range(stack, 8.0D);
 		double coneDegrees = GunUpgradeService.cone(stack, 24.0D);
 		double coneDot = Math.cos(Math.toRadians(coneDegrees));
-		for (int i = 1; i <= 12; i++) {
-			Vec3d direction = applySpread(forward, world, GunUpgradeService.spread(stack, 22.0D));
-			Vec3d pos = start.add(direction.multiply(i * range / 12.0D));
-			world.spawnParticles(ParticleTypes.FLAME, pos.x, pos.y, pos.z, 2, 0.04D, 0.04D, 0.04D, 0.01D);
-			world.spawnParticles(ParticleTypes.SMOKE, pos.x, pos.y, pos.z, 1, 0.04D, 0.04D, 0.04D, 0.0D);
-		}
+		BallisticsVisuals.flamethrower(
+				world,
+				start.add(forward.multiply(1.25D)),
+				forward,
+				range,
+				GunUpgradeService.spread(stack, 22.0D),
+				player.age
+		);
 		Box searchBox = player.getBoundingBox().stretch(forward.multiply(range)).expand(range * 0.5D);
 		for (Entity target : world.getOtherEntities(player, searchBox, entity -> canHit(player, entity))) {
 			Vec3d targetPos = target.getBoundingBox().getCenter();
@@ -347,7 +363,9 @@ public final class SniperRifleServer {
 			target.damage(world, player.getDamageSources().playerAttack(player), GunUpgradeService.damage(stack, 2.0F));
 			target.setOnFireFor(3.0F);
 		}
-		world.playSound(null, player.getBlockPos(), SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.PLAYERS, 0.55F, 0.8F);
+		if (player.age % FLAMETHROWER_SOUND_INTERVAL_TICKS == 0) {
+			world.playSound(null, player.getBlockPos(), SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.PLAYERS, 0.48F, 0.72F);
+		}
 		stack.damage(1, player, EquipmentSlot.MAINHAND);
 	}
 
@@ -372,21 +390,6 @@ public final class SniperRifleServer {
 		target.velocityModified = true;
 	}
 
-	private static void spawnShotgunPellets(ServerWorld world, Vec3d start, Vec3d forward, float yaw, float pitch, double coneDegrees) {
-		for (int i = 0; i < SHOTGUN_PELLETS; i++) {
-			double yawOffset = (world.random.nextDouble() - 0.5D) * coneDegrees;
-			double pitchOffset = (world.random.nextDouble() - 0.5D) * 28.0D;
-			Vec3d direction = Vec3d.fromPolar((float) (pitch + pitchOffset), (float) (yaw + yawOffset)).normalize();
-			if (direction.dotProduct(forward) < 0.15D) {
-				direction = forward;
-			}
-			for (int step = 1; step <= 5; step++) {
-				Vec3d pos = start.add(direction.multiply(step * 0.85D));
-				world.spawnParticles(ParticleTypes.SMOKE, pos.x, pos.y, pos.z, 1, 0.01D, 0.01D, 0.01D, 0.0D);
-			}
-		}
-	}
-
 	private static Vec3d applySpread(Vec3d direction, ServerWorld world, double spreadDegrees) {
 		if (spreadDegrees <= 0.0D) {
 			return direction;
@@ -398,61 +401,6 @@ public final class SniperRifleServer {
 				(world.random.nextDouble() - 0.5D) * spread
 		);
 		return direction.add(random).normalize();
-	}
-
-	private static void spawnLineParticles(ServerWorld world, Vec3d start, Vec3d end, net.minecraft.particle.ParticleEffect particle, double spacing) {
-		Vec3d delta = end.subtract(start);
-		double length = delta.length();
-		if (length <= 0.001D) {
-			return;
-		}
-		Vec3d direction = delta.normalize();
-		for (double traveled = 0.0D; traveled <= length; traveled += spacing) {
-			Vec3d pos = start.add(direction.multiply(traveled));
-			world.spawnParticles(particle, pos.x, pos.y, pos.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
-		}
-	}
-
-	private static void spawnRailgunBeam(ServerWorld world, Vec3d start, Vec3d end) {
-		Vec3d delta = end.subtract(start);
-		double length = delta.length();
-		if (length <= 0.001D) {
-			return;
-		}
-		Vec3d direction = delta.normalize();
-		Vec3d side = perpendicular(direction);
-		Vec3d up = side.crossProduct(direction).normalize();
-		for (double traveled = 0.0D; traveled <= length; traveled += 0.28D) {
-			Vec3d center = start.add(direction.multiply(traveled));
-			world.spawnParticles(ParticleTypes.END_ROD, center.x, center.y, center.z, 2, 0.015D, 0.015D, 0.015D, 0.0D);
-			for (double radius : new double[]{0.12D, -0.12D, 0.22D, -0.22D}) {
-				Vec3d sidePos = center.add(side.multiply(radius));
-				Vec3d upPos = center.add(up.multiply(radius));
-				world.spawnParticles(ParticleTypes.CLOUD, sidePos.x, sidePos.y, sidePos.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
-				world.spawnParticles(ParticleTypes.CLOUD, upPos.x, upPos.y, upPos.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
-			}
-		}
-	}
-
-	private static void spawnRailgunMuzzleRing(ServerWorld world, Vec3d center, Vec3d direction) {
-		Vec3d side = perpendicular(direction);
-		Vec3d up = side.crossProduct(direction).normalize();
-		for (int i = 0; i < 32; i++) {
-			double angle = i * Math.PI * 2.0D / 32.0D;
-			Vec3d pos = center
-					.add(side.multiply(Math.cos(angle) * 0.75D))
-					.add(up.multiply(Math.sin(angle) * 0.75D));
-			world.spawnParticles(ParticleTypes.CLOUD, pos.x, pos.y, pos.z, 2, 0.01D, 0.01D, 0.01D, 0.0D);
-			world.spawnParticles(ParticleTypes.END_ROD, pos.x, pos.y, pos.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
-		}
-	}
-
-	private static Vec3d perpendicular(Vec3d direction) {
-		Vec3d side = direction.crossProduct(new Vec3d(0.0D, 1.0D, 0.0D));
-		if (side.lengthSquared() < 1.0E-4D) {
-			side = direction.crossProduct(new Vec3d(1.0D, 0.0D, 0.0D));
-		}
-		return side.normalize();
 	}
 
 	private static boolean isHoldingAdvancedWeapon(ServerPlayerEntity player, AdvancedWeaponFirePayload.Weapon weapon) {
@@ -482,24 +430,6 @@ public final class SniperRifleServer {
 		ADVANCED_COOLDOWNS.entrySet().removeIf(entry -> entry.getValue() <= 0);
 	}
 
-	private static void tickBulletTraces() {
-		ListIterator<BulletTrace> iterator = BULLET_TRACES.listIterator();
-		while (iterator.hasNext()) {
-			BulletTrace trace = iterator.next();
-			int nextAge = trace.age() + 1;
-			double progress = nextAge / (double) BULLET_TRACE_TICKS;
-			Vec3d pos = trace.start().lerp(trace.end(), Math.min(1.0D, progress));
-			Vec3d back = trace.start().lerp(trace.end(), Math.max(0.0D, progress - 0.12D));
-			trace.world().spawnParticles(ParticleTypes.CRIT, pos.x, pos.y, pos.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
-			trace.world().spawnParticles(ParticleTypes.SMOKE, back.x, back.y, back.z, 1, 0.01D, 0.01D, 0.01D, 0.0D);
-			if (nextAge >= BULLET_TRACE_TICKS) {
-				iterator.remove();
-			} else {
-				iterator.set(trace.withAge(nextAge));
-			}
-		}
-	}
-
 	private static void clear(ServerPlayerEntity player) {
 		AmmoService.clear(player);
 		ZOOM_LEVELS.remove(player.getUuid());
@@ -515,13 +445,6 @@ public final class SniperRifleServer {
 		SHOTGUN_COOLDOWNS.clear();
 		GRENADE_LAUNCHER_COOLDOWNS.clear();
 		ADVANCED_COOLDOWNS.clear();
-		BULLET_TRACES.clear();
 		AmmoService.clearAll();
-	}
-
-	private record BulletTrace(ServerWorld world, Vec3d start, Vec3d end, int age) {
-		private BulletTrace withAge(int age) {
-			return new BulletTrace(world, start, end, age);
-		}
 	}
 }

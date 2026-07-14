@@ -2,6 +2,7 @@ package com.zoyluo.guns.entity;
 
 import com.zoyluo.guns.Guns;
 import com.zoyluo.guns.item.GrenadeLauncherItem;
+import com.zoyluo.guns.visual.BallisticsVisuals;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
@@ -9,7 +10,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
@@ -44,8 +44,8 @@ public class GrenadeProjectileEntity extends ThrownItemEntity {
 	@Override
 	public void tick() {
 		super.tick();
-		if (!isRemoved() && age > 1) {
-			spawnTrail();
+		if (!isRemoved() && age > 1 && getWorld() instanceof ServerWorld serverWorld) {
+			BallisticsVisuals.grenadeTrail(serverWorld, getPos(), getVelocity(), age);
 		}
 	}
 
@@ -58,8 +58,11 @@ public class GrenadeProjectileEntity extends ThrownItemEntity {
 	}
 
 	private void explode() {
-		getWorld().createExplosion(this, getX(), getY(), getZ(), explosionPower, false, World.ExplosionSourceType.TNT);
-		getWorld().sendEntityStatus(this, (byte) 3);
+		if (!(getWorld() instanceof ServerWorld serverWorld)) {
+			return;
+		}
+		BallisticsVisuals.grenadeImpact(serverWorld, getPos());
+		serverWorld.createExplosion(this, getX(), getY(), getZ(), explosionPower, false, World.ExplosionSourceType.TNT);
 		discard();
 	}
 
@@ -77,23 +80,4 @@ public class GrenadeProjectileEntity extends ThrownItemEntity {
 		}
 	}
 
-	private void spawnTrail() {
-		double backX = getX() - getVelocity().x * 0.35D;
-		double backY = getY() - getVelocity().y * 0.35D;
-		double backZ = getZ() - getVelocity().z * 0.35D;
-		if (getWorld() instanceof ServerWorld serverWorld) {
-			serverWorld.spawnParticles(ParticleTypes.SMOKE, backX, backY, backZ, 2, 0.025D, 0.025D, 0.025D, 0.0D);
-		} else {
-			getWorld().addParticle(ParticleTypes.SMOKE, backX, backY, backZ, 0.0D, 0.0D, 0.0D);
-		}
-	}
-
-	@Override
-	public void handleStatus(byte status) {
-		if (status == 3) {
-			for (int i = 0; i < 12; i++) {
-				getWorld().addParticle(ParticleTypes.SMOKE, getX(), getY(), getZ(), random.nextGaussian() * 0.05D, random.nextGaussian() * 0.05D, random.nextGaussian() * 0.05D);
-			}
-		}
-	}
 }

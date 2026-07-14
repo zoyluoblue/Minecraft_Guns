@@ -1,543 +1,1162 @@
 {
-	"credit": "Guns flamethrower model",
-	"textures": {
-		"body": "guns:item/flamethrower",
-		"particle": "guns:item/flamethrower"
-	},
-	"elements": [
-		{
-			"name": "stock",
-			"from": [
-				-2,
-				5.8,
-				6.3
-			],
-			"to": [
-				3.5,
-				9.1,
-				9.7
-			],
-			"faces": {
-				"north": {
-					"uv": [
-						0,
-						0,
-						6,
-						4
-					],
-					"texture": "#body"
-				},
-				"south": {
-					"uv": [
-						0,
-						0,
-						6,
-						4
-					],
-					"texture": "#body"
-				},
-				"east": {
-					"uv": [
-						0,
-						0,
-						6,
-						4
-					],
-					"texture": "#body"
-				},
-				"west": {
-					"uv": [
-						0,
-						0,
-						6,
-						4
-					],
-					"texture": "#body"
-				},
-				"up": {
-					"uv": [
-						0,
-						0,
-						6,
-						4
-					],
-					"texture": "#body"
-				},
-				"down": {
-					"uv": [
-						0,
-						0,
-						6,
-						4
-					],
-					"texture": "#body"
-				}
-			}
-		},
-		{
-			"name": "receiver",
-			"from": [
-				3.1,
-				7,
-				5.8
-			],
-			"to": [
-				10,
-				10,
-				10.2
-			],
-			"faces": {
-				"north": {
-					"uv": [
-						4,
-						4,
-						11,
-						8
-					],
-					"texture": "#body"
-				},
-				"south": {
-					"uv": [
-						4,
-						4,
-						11,
-						8
-					],
-					"texture": "#body"
-				},
-				"east": {
-					"uv": [
-						4,
-						4,
-						11,
-						8
-					],
-					"texture": "#body"
-				},
-				"west": {
-					"uv": [
-						4,
-						4,
-						11,
-						8
-					],
-					"texture": "#body"
-				},
-				"up": {
-					"uv": [
-						4,
-						4,
-						11,
-						8
-					],
-					"texture": "#body"
-				},
-				"down": {
-					"uv": [
-						4,
-						4,
-						11,
-						8
-					],
-					"texture": "#body"
-				}
-			}
-		},
-		{
-			"name": "barrel",
-			"from": [
-				9.5,
-				8.1,
-				7
-			],
-			"to": [
-				19,
-				9.4,
-				9
-			],
-			"faces": {
-				"north": {
-					"uv": [
-						0,
-						10,
-						11,
-						12
-					],
-					"texture": "#body"
-				},
-				"south": {
-					"uv": [
-						0,
-						10,
-						11,
-						12
-					],
-					"texture": "#body"
-				},
-				"east": {
-					"uv": [
-						0,
-						10,
-						11,
-						12
-					],
-					"texture": "#body"
-				},
-				"west": {
-					"uv": [
-						0,
-						10,
-						11,
-						12
-					],
-					"texture": "#body"
-				},
-				"up": {
-					"uv": [
-						0,
-						10,
-						11,
-						12
-					],
-					"texture": "#body"
-				},
-				"down": {
-					"uv": [
-						0,
-						10,
-						11,
-						12
-					],
-					"texture": "#body"
-				}
-			}
-		},
-		{
-			"name": "muzzle",
-			"from": [
-				18,
-				7.5,
-				6.4
-			],
-			"to": [
-				19.7,
-				10.1,
-				9.6
-			],
-			"faces": {
-				"north": {
-					"uv": [
-						12,
-						0,
-						15,
-						4
-					],
-					"texture": "#body"
-				},
-				"south": {
-					"uv": [
-						12,
-						0,
-						15,
-						4
-					],
-					"texture": "#body"
-				},
-				"east": {
-					"uv": [
-						12,
-						0,
-						15,
-						4
-					],
-					"texture": "#body"
-				},
-				"west": {
-					"uv": [
-						12,
-						0,
-						15,
-						4
-					],
-					"texture": "#body"
-				},
-				"up": {
-					"uv": [
-						12,
-						0,
-						15,
-						4
-					],
-					"texture": "#body"
-				},
-				"down": {
-					"uv": [
-						12,
-						0,
-						15,
-						4
-					],
-					"texture": "#body"
-				}
-			}
-		},
-		{
-			"name": "grip",
-			"from": [
-				4.5,
-				2.4,
-				6.5
-			],
-			"to": [
-				6.4,
-				7.2,
-				9.5
-			],
-			"rotation": {
-				"origin": [
-					5.5,
-					7,
-					8
-				],
-				"axis": "z",
-				"angle": -22.5
-			},
-			"faces": {
-				"north": {
-					"uv": [
-						9,
-						0,
-						12,
-						5
-					],
-					"texture": "#body"
-				},
-				"south": {
-					"uv": [
-						9,
-						0,
-						12,
-						5
-					],
-					"texture": "#body"
-				},
-				"east": {
-					"uv": [
-						9,
-						0,
-						12,
-						5
-					],
-					"texture": "#body"
-				},
-				"west": {
-					"uv": [
-						9,
-						0,
-						12,
-						5
-					],
-					"texture": "#body"
-				},
-				"up": {
-					"uv": [
-						9,
-						0,
-						12,
-						5
-					],
-					"texture": "#body"
-				},
-				"down": {
-					"uv": [
-						9,
-						0,
-						12,
-						5
-					],
-					"texture": "#body"
-				}
-			}
-		},
-		{
-			"name": "fuel_tank",
-			"from": [
-				9,
-				4.8,
-				5.6
-			],
-			"to": [
-				15,
-				7.2,
-				10.4
-			],
-			"faces": {
-				"north": {
-					"uv": [
-						0,
-						12,
-						7,
-						15
-					],
-					"texture": "#body"
-				},
-				"south": {
-					"uv": [
-						0,
-						12,
-						7,
-						15
-					],
-					"texture": "#body"
-				},
-				"east": {
-					"uv": [
-						0,
-						12,
-						7,
-						15
-					],
-					"texture": "#body"
-				},
-				"west": {
-					"uv": [
-						0,
-						12,
-						7,
-						15
-					],
-					"texture": "#body"
-				},
-				"up": {
-					"uv": [
-						0,
-						12,
-						7,
-						15
-					],
-					"texture": "#body"
-				},
-				"down": {
-					"uv": [
-						0,
-						12,
-						7,
-						15
-					],
-					"texture": "#body"
-				}
-			}
-		}
-	],
-	"display": {
-		"thirdperson_righthand": {
-			"rotation": [
-				0,
-				90,
-				55
-			],
-			"translation": [
-				0,
-				2,
-				1
-			],
-			"scale": [
-				1,
-				1,
-				1
-			]
-		},
-		"thirdperson_lefthand": {
-			"rotation": [
-				0,
-				-90,
-				-55
-			],
-			"translation": [
-				0,
-				2,
-				1
-			],
-			"scale": [
-				1,
-				1,
-				1
-			]
-		},
-		"firstperson_righthand": {
-			"rotation": [
-				0,
-				90,
-				18
-			],
-			"translation": [
-				1,
-				2,
-				1
-			],
-			"scale": [
-				0.88,
-				0.88,
-				0.88
-			]
-		},
-		"firstperson_lefthand": {
-			"rotation": [
-				0,
-				-90,
-				-18
-			],
-			"translation": [
-				1,
-				2,
-				1
-			],
-			"scale": [
-				0.88,
-				0.88,
-				0.88
-			]
-		},
-		"gui": {
-			"rotation": [
-				30,
-				135,
-				0
-			],
-			"translation": [
-				-1,
-				0,
-				0
-			],
-			"scale": [
-				0.76,
-				0.76,
-				0.76
-			]
-		},
-		"ground": {
-			"translation": [
-				0,
-				3,
-				0
-			],
-			"scale": [
-				0.6,
-				0.6,
-				0.6
-			]
-		},
-		"fixed": {
-			"rotation": [
-				0,
-				90,
-				0
-			],
-			"scale": [
-				1,
-				1,
-				1
-			]
-		}
-	}
+  "credit": "Guns owned reference-matched pixel-cuboid visual rebuild",
+  "ambientocclusion": true,
+  "gui_light": "front",
+  "textures": {
+    "body": "guns:item/flamethrower",
+    "particle": "guns:item/flamethrower"
+  },
+  "display": {
+    "gui": {
+      "rotation": [
+        30,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        1.2,
+        0
+      ],
+      "scale": [
+        0.86,
+        0.86,
+        0.86
+      ]
+    },
+    "ground": {
+      "translation": [
+        0,
+        2.4,
+        0
+      ],
+      "scale": [
+        0.48,
+        0.48,
+        0.48
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        180,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        -1.5
+      ],
+      "scale": [
+        0.72,
+        0.72,
+        0.72
+      ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [
+        0,
+        -90,
+        55
+      ],
+      "translation": [
+        1.13,
+        3.2,
+        1.13
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        0,
+        90,
+        -55
+      ],
+      "translation": [
+        1.13,
+        3.2,
+        1.13
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        -90,
+        25
+      ],
+      "translation": [
+        1.0,
+        3.0,
+        1.0
+      ],
+      "scale": [
+        0.74,
+        0.74,
+        0.74
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        90,
+        -25
+      ],
+      "translation": [
+        1.0,
+        3.0,
+        1.0
+      ],
+      "scale": [
+        0.74,
+        0.74,
+        0.74
+      ]
+    }
+  },
+  "elements": [
+    {
+      "name": "nozzle_outer",
+      "from": [
+        0,
+        5.5,
+        3.5
+      ],
+      "to": [
+        3.6,
+        12,
+        11.5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            4,
+            4,
+            8
+          ],
+          "texture": "#body"
+        },
+        "south": {
+          "uv": [
+            0,
+            4,
+            4,
+            8
+          ],
+          "texture": "#body"
+        },
+        "east": {
+          "uv": [
+            0,
+            4,
+            4,
+            8
+          ],
+          "texture": "#body"
+        },
+        "west": {
+          "uv": [
+            0,
+            4,
+            4,
+            8
+          ],
+          "texture": "#body"
+        },
+        "up": {
+          "uv": [
+            0,
+            4,
+            4,
+            8
+          ],
+          "texture": "#body"
+        },
+        "down": {
+          "uv": [
+            0,
+            4,
+            4,
+            8
+          ],
+          "texture": "#body"
+        }
+      }
+    },
+    {
+      "name": "nozzle_bore",
+      "from": [
+        0,
+        7,
+        5
+      ],
+      "to": [
+        0.65,
+        10.5,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            12,
+            4,
+            16,
+            8
+          ],
+          "texture": "#body"
+        },
+        "south": {
+          "uv": [
+            12,
+            4,
+            16,
+            8
+          ],
+          "texture": "#body"
+        },
+        "east": {
+          "uv": [
+            12,
+            4,
+            16,
+            8
+          ],
+          "texture": "#body"
+        },
+        "west": {
+          "uv": [
+            12,
+            4,
+            16,
+            8
+          ],
+          "texture": "#body"
+        },
+        "up": {
+          "uv": [
+            12,
+            4,
+            16,
+            8
+          ],
+          "texture": "#body"
+        },
+        "down": {
+          "uv": [
+            12,
+            4,
+            16,
+            8
+          ],
+          "texture": "#body"
+        }
+      }
+    },
+    {
+      "name": "nozzle_inner",
+      "from": [
+        1,
+        7.5,
+        5.5
+      ],
+      "to": [
+        4.5,
+        10,
+        9.5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            4,
+            0,
+            8,
+            4
+          ],
+          "texture": "#body"
+        },
+        "south": {
+          "uv": [
+            4,
+            0,
+            8,
+            4
+          ],
+          "texture": "#body"
+        },
+        "east": {
+          "uv": [
+            4,
+            0,
+            8,
+            4
+          ],
+          "texture": "#body"
+        },
+        "west": {
+          "uv": [
+            4,
+            0,
+            8,
+            4
+          ],
+          "texture": "#body"
+        },
+        "up": {
+          "uv": [
+            4,
+            0,
+            8,
+            4
+          ],
+          "texture": "#body"
+        },
+        "down": {
+          "uv": [
+            4,
+            0,
+            8,
+            4
+          ],
+          "texture": "#body"
+        }
+      }
+    },
+    {
+      "name": "front_brace",
+      "from": [
+        3,
+        5,
+        3.5
+      ],
+      "to": [
+        5.2,
+        12.5,
+        11.5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            8,
+            0,
+            12,
+            4
+          ],
+          "texture": "#body"
+        },
+        "south": {
+          "uv": [
+            8,
+            0,
+            12,
+            4
+          ],
+          "texture": "#body"
+        },
+        "east": {
+          "uv": [
+            8,
+            0,
+            12,
+            4
+          ],
+          "texture": "#body"
+        },
+        "west": {
+          "uv": [
+            8,
+            0,
+            12,
+            4
+          ],
+          "texture": "#body"
+        },
+        "up": {
+          "uv": [
+            8,
+            0,
+            12,
+            4
+          ],
+          "texture": "#body"
+        },
+        "down": {
+          "uv": [
+            8,
+            0,
+            12,
+            4
+          ],
+          "texture": "#body"
+        }
+      }
+    },
+    {
+      "name": "housing",
+      "from": [
+        4.3,
+        5,
+        4
+      ],
+      "to": [
+        13.5,
+        11.5,
+        11
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            4,
+            0,
+            8,
+            4
+          ],
+          "texture": "#body"
+        },
+        "south": {
+          "uv": [
+            4,
+            0,
+            8,
+            4
+          ],
+          "texture": "#body"
+        },
+        "east": {
+          "uv": [
+            4,
+            0,
+            8,
+            4
+          ],
+          "texture": "#body"
+        },
+        "west": {
+          "uv": [
+            4,
+            0,
+            8,
+            4
+          ],
+          "texture": "#body"
+        },
+        "up": {
+          "uv": [
+            4,
+            0,
+            8,
+            4
+          ],
+          "texture": "#body"
+        },
+        "down": {
+          "uv": [
+            4,
+            0,
+            8,
+            4
+          ],
+          "texture": "#body"
+        }
+      }
+    },
+    {
+      "name": "housing_top",
+      "from": [
+        6,
+        11,
+        5
+      ],
+      "to": [
+        12.5,
+        13,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#body"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#body"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#body"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#body"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#body"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#body"
+        }
+      }
+    },
+    {
+      "name": "top_plate",
+      "from": [
+        7.5,
+        12.5,
+        6
+      ],
+      "to": [
+        10.5,
+        14.5,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            4,
+            4,
+            8
+          ],
+          "texture": "#body"
+        },
+        "south": {
+          "uv": [
+            0,
+            4,
+            4,
+            8
+          ],
+          "texture": "#body"
+        },
+        "east": {
+          "uv": [
+            0,
+            4,
+            4,
+            8
+          ],
+          "texture": "#body"
+        },
+        "west": {
+          "uv": [
+            0,
+            4,
+            4,
+            8
+          ],
+          "texture": "#body"
+        },
+        "up": {
+          "uv": [
+            0,
+            4,
+            4,
+            8
+          ],
+          "texture": "#body"
+        },
+        "down": {
+          "uv": [
+            0,
+            4,
+            4,
+            8
+          ],
+          "texture": "#body"
+        }
+      }
+    },
+    {
+      "name": "side_panel",
+      "from": [
+        6.5,
+        7,
+        3.5
+      ],
+      "to": [
+        10.5,
+        9.8,
+        4.3
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            8,
+            0,
+            12,
+            4
+          ],
+          "texture": "#body"
+        },
+        "south": {
+          "uv": [
+            8,
+            0,
+            12,
+            4
+          ],
+          "texture": "#body"
+        },
+        "east": {
+          "uv": [
+            8,
+            0,
+            12,
+            4
+          ],
+          "texture": "#body"
+        },
+        "west": {
+          "uv": [
+            8,
+            0,
+            12,
+            4
+          ],
+          "texture": "#body"
+        },
+        "up": {
+          "uv": [
+            8,
+            0,
+            12,
+            4
+          ],
+          "texture": "#body"
+        },
+        "down": {
+          "uv": [
+            8,
+            0,
+            12,
+            4
+          ],
+          "texture": "#body"
+        }
+      }
+    },
+    {
+      "name": "rear_cap",
+      "from": [
+        12.5,
+        5.5,
+        4.5
+      ],
+      "to": [
+        16,
+        11,
+        10.5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            12,
+            4,
+            16,
+            8
+          ],
+          "texture": "#body"
+        },
+        "south": {
+          "uv": [
+            12,
+            4,
+            16,
+            8
+          ],
+          "texture": "#body"
+        },
+        "east": {
+          "uv": [
+            12,
+            4,
+            16,
+            8
+          ],
+          "texture": "#body"
+        },
+        "west": {
+          "uv": [
+            12,
+            4,
+            16,
+            8
+          ],
+          "texture": "#body"
+        },
+        "up": {
+          "uv": [
+            12,
+            4,
+            16,
+            8
+          ],
+          "texture": "#body"
+        },
+        "down": {
+          "uv": [
+            12,
+            4,
+            16,
+            8
+          ],
+          "texture": "#body"
+        }
+      }
+    },
+    {
+      "name": "tank",
+      "from": [
+        8,
+        0,
+        7
+      ],
+      "to": [
+        12.5,
+        6,
+        12.5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            4,
+            4,
+            8,
+            8
+          ],
+          "texture": "#body"
+        },
+        "south": {
+          "uv": [
+            4,
+            4,
+            8,
+            8
+          ],
+          "texture": "#body"
+        },
+        "east": {
+          "uv": [
+            4,
+            4,
+            8,
+            8
+          ],
+          "texture": "#body"
+        },
+        "west": {
+          "uv": [
+            4,
+            4,
+            8,
+            8
+          ],
+          "texture": "#body"
+        },
+        "up": {
+          "uv": [
+            4,
+            4,
+            8,
+            8
+          ],
+          "texture": "#body"
+        },
+        "down": {
+          "uv": [
+            4,
+            4,
+            8,
+            8
+          ],
+          "texture": "#body"
+        }
+      }
+    },
+    {
+      "name": "tank_highlight",
+      "from": [
+        8.8,
+        1,
+        11.8
+      ],
+      "to": [
+        11.6,
+        5,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            8,
+            4,
+            12,
+            8
+          ],
+          "texture": "#body"
+        },
+        "south": {
+          "uv": [
+            8,
+            4,
+            12,
+            8
+          ],
+          "texture": "#body"
+        },
+        "east": {
+          "uv": [
+            8,
+            4,
+            12,
+            8
+          ],
+          "texture": "#body"
+        },
+        "west": {
+          "uv": [
+            8,
+            4,
+            12,
+            8
+          ],
+          "texture": "#body"
+        },
+        "up": {
+          "uv": [
+            8,
+            4,
+            12,
+            8
+          ],
+          "texture": "#body"
+        },
+        "down": {
+          "uv": [
+            8,
+            4,
+            12,
+            8
+          ],
+          "texture": "#body"
+        }
+      }
+    },
+    {
+      "name": "tank_neck",
+      "from": [
+        9,
+        5.5,
+        8
+      ],
+      "to": [
+        11.8,
+        7,
+        11.5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            4,
+            4,
+            8
+          ],
+          "texture": "#body"
+        },
+        "south": {
+          "uv": [
+            0,
+            4,
+            4,
+            8
+          ],
+          "texture": "#body"
+        },
+        "east": {
+          "uv": [
+            0,
+            4,
+            4,
+            8
+          ],
+          "texture": "#body"
+        },
+        "west": {
+          "uv": [
+            0,
+            4,
+            4,
+            8
+          ],
+          "texture": "#body"
+        },
+        "up": {
+          "uv": [
+            0,
+            4,
+            4,
+            8
+          ],
+          "texture": "#body"
+        },
+        "down": {
+          "uv": [
+            0,
+            4,
+            4,
+            8
+          ],
+          "texture": "#body"
+        }
+      }
+    },
+    {
+      "name": "hose",
+      "from": [
+        6,
+        3,
+        4.2
+      ],
+      "to": [
+        9,
+        5.2,
+        11.5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            8,
+            0,
+            12,
+            4
+          ],
+          "texture": "#body"
+        },
+        "south": {
+          "uv": [
+            8,
+            0,
+            12,
+            4
+          ],
+          "texture": "#body"
+        },
+        "east": {
+          "uv": [
+            8,
+            0,
+            12,
+            4
+          ],
+          "texture": "#body"
+        },
+        "west": {
+          "uv": [
+            8,
+            0,
+            12,
+            4
+          ],
+          "texture": "#body"
+        },
+        "up": {
+          "uv": [
+            8,
+            0,
+            12,
+            4
+          ],
+          "texture": "#body"
+        },
+        "down": {
+          "uv": [
+            8,
+            0,
+            12,
+            4
+          ],
+          "texture": "#body"
+        }
+      }
+    },
+    {
+      "name": "grip",
+      "from": [
+        12,
+        0,
+        5.5
+      ],
+      "to": [
+        14.5,
+        5.5,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            12,
+            4,
+            16,
+            8
+          ],
+          "texture": "#body"
+        },
+        "south": {
+          "uv": [
+            12,
+            4,
+            16,
+            8
+          ],
+          "texture": "#body"
+        },
+        "east": {
+          "uv": [
+            12,
+            4,
+            16,
+            8
+          ],
+          "texture": "#body"
+        },
+        "west": {
+          "uv": [
+            12,
+            4,
+            16,
+            8
+          ],
+          "texture": "#body"
+        },
+        "up": {
+          "uv": [
+            12,
+            4,
+            16,
+            8
+          ],
+          "texture": "#body"
+        },
+        "down": {
+          "uv": [
+            12,
+            4,
+            16,
+            8
+          ],
+          "texture": "#body"
+        }
+      }
+    },
+    {
+      "name": "grip_cap",
+      "from": [
+        11.3,
+        4.5,
+        5
+      ],
+      "to": [
+        15,
+        6.2,
+        10.5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            8,
+            0,
+            12,
+            4
+          ],
+          "texture": "#body"
+        },
+        "south": {
+          "uv": [
+            8,
+            0,
+            12,
+            4
+          ],
+          "texture": "#body"
+        },
+        "east": {
+          "uv": [
+            8,
+            0,
+            12,
+            4
+          ],
+          "texture": "#body"
+        },
+        "west": {
+          "uv": [
+            8,
+            0,
+            12,
+            4
+          ],
+          "texture": "#body"
+        },
+        "up": {
+          "uv": [
+            8,
+            0,
+            12,
+            4
+          ],
+          "texture": "#body"
+        },
+        "down": {
+          "uv": [
+            8,
+            0,
+            12,
+            4
+          ],
+          "texture": "#body"
+        }
+      }
+    }
+  ]
 }
