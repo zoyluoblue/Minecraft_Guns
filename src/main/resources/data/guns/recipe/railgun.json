@@ -1,0 +1,19 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "equipment",
+	"pattern": [
+		"IDI",
+		" C ",
+		" R "
+	],
+	"key": {
+		"I": "minecraft:iron_ingot",
+		"D": "minecraft:diamond",
+		"C": "minecraft:copper_ingot",
+		"R": "minecraft:redstone"
+	},
+	"result": {
+		"id": "guns:railgun",
+		"count": 1
+	}
+}

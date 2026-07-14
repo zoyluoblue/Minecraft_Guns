@@ -1,0 +1,17 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"PG",
+		"I "
+	],
+	"key": {
+		"P": "minecraft:paper",
+		"G": "minecraft:gunpowder",
+		"I": "minecraft:iron_nugget"
+	},
+	"result": {
+		"id": "guns:shotgun_shell",
+		"count": 8
+	}
+}

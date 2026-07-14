@@ -1,0 +1,18 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"CCC",
+		"RR ",
+		"II "
+	],
+	"key": {
+		"C": "minecraft:copper_ingot",
+		"R": "minecraft:redstone",
+		"I": "minecraft:iron_ingot"
+	},
+	"result": {
+		"id": "guns:cooling_system",
+		"count": 1
+	}
+}

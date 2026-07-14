@@ -26,6 +26,15 @@ public final class ModItemGroups {
 						entries.add(ModItems.SMG);
 						entries.add(ModItems.FLAMETHROWER);
 						entries.add(ModItems.RAILGUN);
+						entries.add(ModItems.RIFLE_ROUND);
+						entries.add(ModItems.SHOTGUN_SHELL);
+						entries.add(ModItems.GRENADE_ROUND);
+						entries.add(ModItems.FUEL_CELL);
+						entries.add(ModItems.RAILGUN_CELL);
+						entries.add(ModItems.UPGRADE_TEMPLATE);
+						entries.add(ModItems.PRECISION_BARREL);
+						entries.add(ModItems.COOLING_SYSTEM);
+						entries.add(ModItems.REINFORCED_RECEIVER);
 					})
 					.build()
 	);

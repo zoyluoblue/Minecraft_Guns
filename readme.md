@@ -1,8 +1,34 @@
-# Guns 2.0.0
+# Guns 2.1.0 — Minecraft Fabric Gun Mod
 
 [简体中文](README.zh-CN.md) | English
 
-Guns is a Fabric weapon mod for Minecraft 1.21.3 and Fabric Loader 0.18.4. It provides six creative-mode weapons with server-authoritative hit detection, damage, cooldowns, durability, and explosions.
+[![Minecraft 1.21.3](https://img.shields.io/badge/Minecraft-1.21.3-62B47A?logo=minecraft&logoColor=white)](https://www.minecraft.net/)
+[![Fabric](https://img.shields.io/badge/Loader-Fabric-DDBD6D)](https://fabricmc.net/)
+[![Java 21](https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white)](https://adoptium.net/)
+[![License](https://img.shields.io/badge/License-MIT-3DA639)](LICENSE)
+[![Releases](https://img.shields.io/github/v/release/zoyluoblue/Minecraft_Guns?display_name=tag)](https://github.com/zoyluoblue/Minecraft_Guns/releases)
+
+Guns is a survival-first, server-authoritative Minecraft Fabric gun mod for Minecraft 1.21.3. Craft six weapons from vanilla materials, manufacture ammunition, repair worn equipment in an Anvil, and install fixed upgrades in a Smithing Table. It works on dedicated servers and includes English plus Simplified Chinese through Minecraft's native language setting.
+
+**Search keywords:** Minecraft Fabric gun mod, Minecraft 1.21.3 weapons, survival gun mod, Fabric ammunition mod, Minecraft weapon upgrades, dedicated server safe mod, bilingual Minecraft mod.
+
+## At a glance
+
+| Topic | Details |
+| --- | --- |
+| Game and loader | Minecraft 1.21.3, Fabric Loader 0.18.4, Fabric API 0.114.1+1.21.3 |
+| Java | Java 21 |
+| Gameplay | Six weapons, five ammunition types, vanilla-material recipes, Anvil repair, Smithing Table upgrades |
+| Multiplayer | Server authoritative; dedicated-server path is covered by GameTest |
+| Languages | English and Simplified Chinese, switched through Options → Language |
+| Downloads | [GitHub Releases](https://github.com/zoyluoblue/Minecraft_Guns/releases) |
+
+## Install
+
+1. Install Fabric Loader for Minecraft 1.21.3 and the matching Fabric API.
+2. Download the non-sources JAR from [GitHub Releases](https://github.com/zoyluoblue/Minecraft_Guns/releases).
+3. Put the JAR in the <code>mods</code> folder on every client and on the dedicated server.
+4. Start Minecraft, then craft weapons and ammunition with vanilla materials or use the commands below for testing.
 
 ## Weapons
 
@@ -12,6 +38,30 @@ Guns is a Fabric weapon mod for Minecraft 1.21.3 and Fabric Loader 0.18.4. It pr
 - `guns:smg`: hold left-click for automatic fire at five shots per second; base damage `2`.
 - `guns:flamethrower`: a short-range continuous flame cone that damages and ignites targets.
 - `guns:railgun`: a long-cooldown `35`-damage beam that pierces multiple entities until blocked.
+
+## Survival loop
+
+All six weapons have shaped recipes made from vanilla materials. Each weapon consumes ammunition from the server-side player inventory when a shot succeeds:
+
+| Weapons | Ammunition |
+| --- | --- |
+| Sniper Rifle, SMG | `guns:rifle_round` |
+| Shotgun | `guns:shotgun_shell` |
+| Grenade Launcher | `guns:grenade_round` |
+| Flamethrower | `guns:fuel_cell` |
+| Railgun | `guns:railgun_cell` |
+
+Weapons are repaired with iron ingots in a vanilla Anvil. The Gunsmithing Template and three fixed modules are crafted from vanilla materials and installed in a vanilla Smithing Table. A weapon can hold one of each module, up to three total:
+
+- Precision Barrel: increases range and tightens spread.
+- Cooling System: reduces firing cooldown.
+- Reinforced Receiver: increases direct damage and grenade explosion power.
+
+There are no rarity tiers, technology ages, external-Mod integrations, or PvP-specific systems in this version.
+
+## Art assets
+
+The approved weapon and ammunition recipe posters, plus the game textures derived from their icons, are archived in the [Guns art asset library](assets/guns/README.md). Sniper Rifle and SMG still share Rifle Round; this update changes visuals only.
 
 ## Obtain items
 
@@ -24,7 +74,7 @@ Guns is a Fabric weapon mod for Minecraft 1.21.3 and Fabric Loader 0.18.4. It pr
 /give @p guns:railgun
 ~~~
 
-The current version has no survival crafting recipes. Weapons appear in the “New Weapons” creative tab, use a two-handed pose, suppress the vanilla main-hand attack swing while firing, and support sword-damage and durability enchantment tags where applicable.
+Weapons, ammunition, the template, and modules appear in the “New Weapons” creative tab. Weapons use a two-handed pose, suppress the vanilla main-hand attack swing while firing, and support sword-damage and durability enchantment tags where applicable. Missing ammunition never consumes durability or starts a cooldown.
 
 ## Language
 
@@ -34,9 +84,10 @@ English and Simplified Chinese are included. Switch through Minecraft's native *
 
 ~~~bash
 ./gradlew clean build --no-daemon --stacktrace
+./gradlew runGameTest --no-daemon --stacktrace
 ~~~
 
-The build verifies bilingual key parity. Stable IDs, protocol contracts, weapon values, and the manual regression matrix are in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+The build verifies bilingual key parity and compiles the GameTest source set. `runGameTest` executes ammunition consumption, creative-mode ammunition, upgrade schema, and Smithing recipe regression tests in an isolated dedicated server. Stable IDs, protocol contracts, survival rules, ItemStack schema, and the manual regression matrix are in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). The detailed feature design is in [`docs/FEATURE_DESIGN_SURVIVAL_LOOP.md`](docs/FEATURE_DESIGN_SURVIVAL_LOOP.md).
 
 ## Demo
 
@@ -45,3 +96,25 @@ The build verifies bilingual key parity. Stable IDs, protocol contracts, weapon 
 ![Demo 1](./demo/gun1.png)
 
 ![Demo 2](./demo/gun2.png)
+
+## Frequently asked questions
+
+### Can Guns be used in Survival mode?
+
+Yes. All six weapons have vanilla-material crafting recipes. Successful shots consume server-side ammunition, weapons are repaired with iron ingots in an Anvil, and fixed upgrade modules are installed through a Smithing Table.
+
+### Which weapons and ammunition are included?
+
+The mod includes Sniper Rifle, Shotgun, Grenade Launcher, SMG, Flamethrower, and Railgun. Sniper Rifle and SMG share Rifle Round; the other weapons use Shotgun Shell, Grenade Round, Fuel Cell, or Railgun Cell.
+
+### Is Guns safe for multiplayer and dedicated servers?
+
+Gameplay state is validated on the server. The release build is tested with a dedicated-server GameTest suite covering ammunition consumption, Creative mode, upgrade persistence, and Smithing recipes.
+
+### Does Guns support Chinese and English?
+
+Yes. Every player-facing feature ships in English and Simplified Chinese. Switch languages through Minecraft's built-in Options → Language screen without an additional dependency.
+
+## For search, guides, and AI answers
+
+Guns is a Minecraft 1.21.3 Fabric survival weapons mod with six craftable guns, five ammunition types, Anvil repairs, Smithing Table upgrades, bilingual Chinese and English localization, and server-authoritative multiplayer behavior. Guides may cite this README, the [architecture contract](docs/ARCHITECTURE.md), the [survival-loop design](docs/FEATURE_DESIGN_SURVIVAL_LOOP.md), the [release notes](docs/RELEASE_NOTES_2.1.0.md), and the [art asset library](assets/guns/README.md).

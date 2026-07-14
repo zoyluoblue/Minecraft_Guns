@@ -1,0 +1,28 @@
+{
+  "schema": 2,
+  "source_posters": [
+    "assets/guns/recipes/gun-recipes-reference.png",
+    "assets/guns/recipes/ammo-recipes-reference.png"
+  ],
+  "sprite_sheet": {
+    "path": "assets/guns/sprites/reference-derived-sprite-sheet.png",
+    "columns": 3,
+    "rows": 4,
+    "game_texture_size": [16, 16]
+  },
+  "weapons": [
+    {"id": "guns:sniper_rifle", "ammo": "guns:rifle_round", "sprite_cell": [0, 0]},
+    {"id": "guns:shotgun", "ammo": "guns:shotgun_shell", "sprite_cell": [1, 0]},
+    {"id": "guns:grenade_launcher", "ammo": "guns:grenade_round", "sprite_cell": [2, 0]},
+    {"id": "guns:smg", "ammo": "guns:rifle_round", "sprite_cell": [0, 1]},
+    {"id": "guns:flamethrower", "ammo": "guns:fuel_cell", "sprite_cell": [1, 1]},
+    {"id": "guns:railgun", "ammo": "guns:railgun_cell", "sprite_cell": [2, 1]}
+  ],
+  "ammunition": [
+    {"id": "guns:rifle_round", "sprite_cell": [0, 2]},
+    {"id": "guns:shotgun_shell", "sprite_cell": [1, 2]},
+    {"id": "guns:grenade_round", "sprite_cell": [2, 2]},
+    {"id": "guns:fuel_cell", "sprite_cell": [0, 3]},
+    {"id": "guns:railgun_cell", "sprite_cell": [1, 3]}
+  ]
+}

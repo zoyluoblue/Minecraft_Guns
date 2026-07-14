@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class GrenadeLauncherItem extends Item {
+public class GrenadeLauncherItem extends GunItem {
 	public static final float EXPLOSION_POWER = 4.0F;
 	public static final float PROJECTILE_SPEED = 1.8F;
 
@@ -28,5 +28,6 @@ public class GrenadeLauncherItem extends Item {
 	public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, net.minecraft.item.tooltip.TooltipType type) {
 		tooltip.add(Text.translatable("tooltip.guns.grenade_launcher.explosion").formatted(Formatting.GRAY));
 		tooltip.add(Text.translatable("tooltip.guns.grenade_launcher.trajectory").formatted(Formatting.DARK_GRAY));
+		appendUpgradeTooltips(stack, tooltip);
 	}
 }

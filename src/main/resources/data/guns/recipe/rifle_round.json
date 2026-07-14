@@ -1,0 +1,17 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"IG",
+		"C "
+	],
+	"key": {
+		"I": "minecraft:iron_nugget",
+		"G": "minecraft:gunpowder",
+		"C": "minecraft:gold_nugget"
+	},
+	"result": {
+		"id": "guns:rifle_round",
+		"count": 8
+	}
+}

@@ -1,0 +1,7 @@
+{
+	"type": "guns:smithing_upgrade",
+	"template": "guns:upgrade_template",
+	"base": "#guns:upgradeable",
+	"addition": "guns:cooling_system",
+	"module": "guns:cooling_system"
+}

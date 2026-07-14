@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class AdvancedWeaponItem extends Item {
+public class AdvancedWeaponItem extends GunItem {
 	private final String tooltipKey;
 
 	public AdvancedWeaponItem(Settings settings, String tooltipKey) {
@@ -27,5 +27,6 @@ public class AdvancedWeaponItem extends Item {
 	@Override
 	public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, net.minecraft.item.tooltip.TooltipType type) {
 		tooltip.add(Text.translatable(tooltipKey).formatted(Formatting.GRAY));
+		appendUpgradeTooltips(stack, tooltip);
 	}
 }

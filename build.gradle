@@ -20,6 +20,57 @@ repositories {
 	mavenCentral()
 }
 
+sourceSets {
+	gametest {
+		compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
+		runtimeClasspath += sourceSets.main.output + sourceSets.main.runtimeClasspath
+	}
+}
+
+loom {
+	mods {
+		"guns" {
+			sourceSet sourceSets.main
+		}
+		"guns-gametest" {
+			sourceSet sourceSets.gametest
+		}
+	}
+	runs {
+		gameTest {
+			server()
+			source sourceSets.gametest
+			runDir "build/run/gameTest"
+			vmArg "-Dfabric-api.gametest"
+			property "fabric-api.gametest.report-file",
+					file("build/test-results/gametest/TEST-guns-gametest.xml").absolutePath
+		}
+	}
+}
+
+def prepareGameTestRun = tasks.register("prepareGameTestRun") {
+	group = "verification"
+	description = "Creates a clean, deterministic Guns GameTest run directory."
+	outputs.upToDateWhen { false }
+
+	doLast {
+		def runDir = file("build/run/gameTest")
+		delete runDir
+		runDir.mkdirs()
+		new File(runDir, "eula.txt").setText("eula=true\n", "UTF-8")
+		new File(runDir, "server.properties").setText(
+				"online-mode=false\nlevel-name=world\nlevel-seed=0\n", "UTF-8")
+	}
+}
+
+tasks.named("runGameTest") {
+	dependsOn prepareGameTestRun
+}
+
+tasks.named("check") {
+	dependsOn tasks.named("gametestClasses")
+}
+
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"

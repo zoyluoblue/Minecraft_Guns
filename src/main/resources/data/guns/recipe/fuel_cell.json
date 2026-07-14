@@ -1,0 +1,18 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"CG",
+		"IR"
+	],
+	"key": {
+		"C": "minecraft:coal",
+		"G": "minecraft:gunpowder",
+		"I": "minecraft:iron_nugget",
+		"R": "minecraft:redstone"
+	},
+	"result": {
+		"id": "guns:fuel_cell",
+		"count": 8
+	}
+}

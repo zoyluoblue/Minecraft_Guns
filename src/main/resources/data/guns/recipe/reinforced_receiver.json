@@ -1,0 +1,18 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"IDI",
+		" G ",
+		" I "
+	],
+	"key": {
+		"I": "minecraft:iron_ingot",
+		"D": "minecraft:diamond",
+		"G": "minecraft:gunpowder"
+	},
+	"result": {
+		"id": "guns:reinforced_receiver",
+		"count": 1
+	}
+}

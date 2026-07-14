@@ -1,11 +1,15 @@
 package com.zoyluo.guns.network;
 
 import com.zoyluo.guns.Guns;
+import com.zoyluo.guns.ammo.AmmoService;
+import com.zoyluo.guns.ammo.AmmoType;
 import com.zoyluo.guns.entity.GrenadeProjectileEntity;
 import com.zoyluo.guns.item.GrenadeLauncherItem;
 import com.zoyluo.guns.item.ShotgunItem;
 import com.zoyluo.guns.item.SniperRifleItem;
+import com.zoyluo.guns.upgrade.GunUpgradeService;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -56,8 +60,10 @@ public final class SniperRifleServer {
 		ServerPlayNetworking.registerGlobalReceiver(GrenadeLauncherFirePayload.ID, (payload, context) -> fireGrenadeLauncher(context.player()));
 		ServerPlayNetworking.registerGlobalReceiver(AdvancedWeaponFirePayload.ID, (payload, context) -> fireAdvancedWeapon(context.player(), payload.weapon()));
 		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> clear(handler.player));
+		ServerLifecycleEvents.SERVER_STOPPING.register(server -> clearAll());
 		ServerTickEvents.END_SERVER_TICK.register(server -> {
 			tickCooldowns();
+			AmmoService.tick();
 			tickBulletTraces();
 		});
 	}
@@ -90,8 +96,12 @@ public final class SniperRifleServer {
 		}
 
 		ItemStack stack = player.getMainHandStack();
+		if (!AmmoService.tryConsume(player, AmmoType.RIFLE_ROUND)) {
+			return;
+		}
+		double range = GunUpgradeService.range(stack, SniperRifleItem.RANGE);
 		Vec3d start = player.getEyePos();
-		Vec3d end = start.add(player.getRotationVec(1.0F).multiply(SniperRifleItem.RANGE));
+		Vec3d end = start.add(player.getRotationVec(1.0F).multiply(range));
 		BlockHitResult blockHit = world.raycast(new RaycastContext(
 				start,
 				end,
@@ -99,15 +109,15 @@ public final class SniperRifleServer {
 				RaycastContext.FluidHandling.NONE,
 				player
 		));
-		double maxDistance = blockHit.getType() == HitResult.Type.BLOCK ? start.squaredDistanceTo(blockHit.getPos()) : SniperRifleItem.RANGE * SniperRifleItem.RANGE;
-		Box searchBox = player.getBoundingBox().stretch(player.getRotationVec(1.0F).multiply(SniperRifleItem.RANGE)).expand(1.0D);
+		double maxDistance = blockHit.getType() == HitResult.Type.BLOCK ? start.squaredDistanceTo(blockHit.getPos()) : range * range;
+		Box searchBox = player.getBoundingBox().stretch(player.getRotationVec(1.0F).multiply(range)).expand(1.0D);
 		EntityHitResult entityHit = ProjectileUtil.raycast(player, start, end, searchBox, entity -> canHit(player, entity), maxDistance);
 
 		Vec3d hitPos = blockHit.getType() == HitResult.Type.BLOCK ? blockHit.getPos() : end;
 		if (entityHit != null) {
 			Entity target = entityHit.getEntity();
 			hitPos = entityHit.getPos();
-			float damage = EnchantmentHelper.getDamage(world, stack, target, player.getDamageSources().playerAttack(player), SniperRifleItem.BASE_DAMAGE);
+			float damage = EnchantmentHelper.getDamage(world, stack, target, player.getDamageSources().playerAttack(player), GunUpgradeService.damage(stack, SniperRifleItem.BASE_DAMAGE));
 			target.damage(world, player.getDamageSources().playerAttack(player), damage);
 			EnchantmentHelper.onTargetDamaged(world, target, player.getDamageSources().playerAttack(player), stack);
 		}
@@ -117,7 +127,7 @@ public final class SniperRifleServer {
 		BULLET_TRACES.add(new BulletTrace(world, start.add(player.getRotationVec(1.0F).multiply(1.35D)), hitPos, 0));
 		world.spawnParticles(ParticleTypes.SMOKE, hitPos.x, hitPos.y, hitPos.z, 8, 0.05D, 0.05D, 0.05D, 0.01D);
 		stack.damage(1, player, EquipmentSlot.MAINHAND);
-		FIRE_COOLDOWNS.put(player.getUuid(), FIRE_COOLDOWN_TICKS);
+		FIRE_COOLDOWNS.put(player.getUuid(), GunUpgradeService.cooldown(stack, FIRE_COOLDOWN_TICKS));
 	}
 
 	private static void fireShotgun(ServerPlayerEntity player) {
@@ -129,20 +139,25 @@ public final class SniperRifleServer {
 		}
 
 		ItemStack stack = player.getMainHandStack();
+		if (!AmmoService.tryConsume(player, AmmoType.SHOTGUN_SHELL)) {
+			return;
+		}
 		Vec3d start = player.getEyePos();
 		Vec3d forward = player.getRotationVec(1.0F).normalize();
-		Box searchBox = player.getBoundingBox().stretch(forward.multiply(ShotgunItem.RANGE)).expand(ShotgunItem.RANGE);
-		double coneDot = Math.cos(Math.toRadians(ShotgunItem.CONE_DEGREES / 2.0D));
+		double range = GunUpgradeService.range(stack, ShotgunItem.RANGE);
+		double coneDegrees = GunUpgradeService.cone(stack, ShotgunItem.CONE_DEGREES);
+		Box searchBox = player.getBoundingBox().stretch(forward.multiply(range)).expand(range);
+		double coneDot = Math.cos(Math.toRadians(coneDegrees / 2.0D));
 		for (Entity target : world.getOtherEntities(player, searchBox, entity -> canHit(player, entity))) {
 			Vec3d targetPos = target.getBoundingBox().getCenter();
 			Vec3d toTarget = targetPos.subtract(start);
 			double distance = toTarget.length();
-			if (distance <= 0.0D || distance > ShotgunItem.RANGE || toTarget.normalize().dotProduct(forward) < coneDot || isBlocked(world, player, start, targetPos)) {
+			if (distance <= 0.0D || distance > range || toTarget.normalize().dotProduct(forward) < coneDot || isBlocked(world, player, start, targetPos)) {
 				continue;
 			}
 
 			int blockDistance = Math.max(1, (int) Math.ceil(distance));
-			float damage = Math.max(ShotgunItem.MIN_DAMAGE, ShotgunItem.BASE_DAMAGE - (blockDistance - 1) * ShotgunItem.DAMAGE_FALLOFF_PER_BLOCK);
+			float damage = Math.max(ShotgunItem.MIN_DAMAGE, GunUpgradeService.damage(stack, ShotgunItem.BASE_DAMAGE) - (blockDistance - 1) * ShotgunItem.DAMAGE_FALLOFF_PER_BLOCK);
 			damage = EnchantmentHelper.getDamage(world, stack, target, player.getDamageSources().playerAttack(player), damage);
 			target.damage(world, player.getDamageSources().playerAttack(player), damage);
 			EnchantmentHelper.onTargetDamaged(world, target, player.getDamageSources().playerAttack(player), stack);
@@ -150,12 +165,12 @@ public final class SniperRifleServer {
 			world.spawnParticles(ParticleTypes.SMOKE, targetPos.x, targetPos.y, targetPos.z, 4, 0.16D, 0.16D, 0.16D, 0.01D);
 		}
 
-		spawnShotgunPellets(world, start.add(forward.multiply(0.9D)), forward, player.getYaw(), player.getPitch());
+		spawnShotgunPellets(world, start.add(forward.multiply(0.9D)), forward, player.getYaw(), player.getPitch(), coneDegrees);
 		world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_GENERIC_EXPLODE.value(), SoundCategory.PLAYERS, 0.55F, 1.15F);
 		world.playSound(null, player.getBlockPos(), SoundEvents.ITEM_CROSSBOW_SHOOT, SoundCategory.PLAYERS, 0.9F, 0.65F);
 		world.spawnParticles(ParticleTypes.SMOKE, start.x + forward.x, start.y + forward.y, start.z + forward.z, 8, 0.08D, 0.08D, 0.08D, 0.02D);
 		stack.damage(1, player, EquipmentSlot.MAINHAND);
-		SHOTGUN_COOLDOWNS.put(player.getUuid(), SHOTGUN_COOLDOWN_TICKS);
+		SHOTGUN_COOLDOWNS.put(player.getUuid(), GunUpgradeService.cooldown(stack, SHOTGUN_COOLDOWN_TICKS));
 	}
 
 	private static void fireGrenadeLauncher(ServerPlayerEntity player) {
@@ -167,16 +182,24 @@ public final class SniperRifleServer {
 		}
 
 		ItemStack stack = player.getMainHandStack();
-		GrenadeProjectileEntity grenade = new GrenadeProjectileEntity(world, player, new ItemStack(Guns.GRENADE_ROUND));
+		if (!AmmoService.tryConsume(player, AmmoType.GRENADE_ROUND)) {
+			return;
+		}
+		GrenadeProjectileEntity grenade = new GrenadeProjectileEntity(
+				world,
+				player,
+				new ItemStack(Guns.GRENADE_ROUND),
+				GunUpgradeService.damage(stack, GrenadeLauncherItem.EXPLOSION_POWER)
+		);
 		Vec3d forward = player.getRotationVec(1.0F).normalize();
 		grenade.setPosition(player.getEyePos().add(forward.multiply(0.85D)));
-		grenade.setVelocity(forward.multiply(GrenadeLauncherItem.PROJECTILE_SPEED));
+		grenade.setVelocity(forward.multiply(GunUpgradeService.projectileSpeed(stack, GrenadeLauncherItem.PROJECTILE_SPEED)));
 		world.spawnEntity(grenade);
 		world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_GENERIC_EXPLODE.value(), SoundCategory.PLAYERS, 0.35F, 1.55F);
 		world.playSound(null, player.getBlockPos(), SoundEvents.ITEM_CROSSBOW_SHOOT, SoundCategory.PLAYERS, 0.8F, 0.45F);
 		world.spawnParticles(ParticleTypes.SMOKE, grenade.getX(), grenade.getY(), grenade.getZ(), 10, 0.08D, 0.08D, 0.08D, 0.02D);
 		stack.damage(1, player, EquipmentSlot.MAINHAND);
-		GRENADE_LAUNCHER_COOLDOWNS.put(player.getUuid(), GRENADE_LAUNCHER_COOLDOWN_TICKS);
+		GRENADE_LAUNCHER_COOLDOWNS.put(player.getUuid(), GunUpgradeService.cooldown(stack, GRENADE_LAUNCHER_COOLDOWN_TICKS));
 	}
 
 	private static void fireAdvancedWeapon(ServerPlayerEntity player, AdvancedWeaponFirePayload.Weapon weapon) {
@@ -187,21 +210,40 @@ public final class SniperRifleServer {
 		if (ADVANCED_COOLDOWNS.getOrDefault(cooldownKey, 0) > 0) {
 			return;
 		}
+		if (!AmmoService.tryConsume(player, ammoType(weapon))) {
+			return;
+		}
+		ItemStack stack = player.getMainHandStack();
 
 		switch (weapon) {
 			case SMG -> {
-				fireHitscan(player, 32.0D, 2.0F, 4.0D, 1, ParticleTypes.SMOKE);
-				setAdvancedCooldown(cooldownKey, 4);
+				fireHitscan(
+						player,
+						GunUpgradeService.range(stack, 32.0D),
+						GunUpgradeService.damage(stack, 2.0F),
+						GunUpgradeService.spread(stack, 4.0D),
+						1,
+						ParticleTypes.SMOKE
+				);
+				setAdvancedCooldown(cooldownKey, GunUpgradeService.cooldown(stack, 4));
 			}
 			case FLAMETHROWER -> {
 				fireFlamethrower(player);
-				setAdvancedCooldown(cooldownKey, 2);
+				setAdvancedCooldown(cooldownKey, GunUpgradeService.cooldown(stack, 2));
 			}
 			case RAILGUN -> {
 				fireRailgun(player);
-				setAdvancedCooldown(cooldownKey, 60);
+				setAdvancedCooldown(cooldownKey, GunUpgradeService.cooldown(stack, 60));
 			}
 		}
+	}
+
+	private static AmmoType ammoType(AdvancedWeaponFirePayload.Weapon weapon) {
+		return switch (weapon) {
+			case SMG -> AmmoType.RIFLE_ROUND;
+			case FLAMETHROWER -> AmmoType.FUEL_CELL;
+			case RAILGUN -> AmmoType.RAILGUN_CELL;
+		};
 	}
 
 	private static void setAdvancedCooldown(String cooldownKey, int ticks) {
@@ -251,7 +293,7 @@ public final class SniperRifleServer {
 		ItemStack stack = player.getMainHandStack();
 		Vec3d start = player.getEyePos();
 		Vec3d direction = player.getRotationVec(1.0F).normalize();
-		double range = 160.0D;
+		double range = GunUpgradeService.range(stack, 160.0D);
 		Vec3d end = start.add(direction.multiply(range));
 		BlockHitResult blockHit = world.raycast(new RaycastContext(start, end, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, player));
 		Vec3d visualEnd = blockHit.getType() == HitResult.Type.BLOCK ? blockHit.getPos() : end;
@@ -267,7 +309,7 @@ public final class SniperRifleServer {
 		hits.sort((a, b) -> Double.compare(start.squaredDistanceTo(a.getPos()), start.squaredDistanceTo(b.getPos())));
 		for (EntityHitResult hit : hits) {
 			Entity target = hit.getEntity();
-			float damage = EnchantmentHelper.getDamage(world, stack, target, player.getDamageSources().playerAttack(player), 35.0F);
+			float damage = EnchantmentHelper.getDamage(world, stack, target, player.getDamageSources().playerAttack(player), GunUpgradeService.damage(stack, 35.0F));
 			target.damage(world, player.getDamageSources().playerAttack(player), damage);
 			EnchantmentHelper.onTargetDamaged(world, target, player.getDamageSources().playerAttack(player), stack);
 		}
@@ -286,10 +328,11 @@ public final class SniperRifleServer {
 		ItemStack stack = player.getMainHandStack();
 		Vec3d start = player.getEyePos();
 		Vec3d forward = player.getRotationVec(1.0F).normalize();
-		double range = 8.0D;
-		double coneDot = Math.cos(Math.toRadians(24.0D));
+		double range = GunUpgradeService.range(stack, 8.0D);
+		double coneDegrees = GunUpgradeService.cone(stack, 24.0D);
+		double coneDot = Math.cos(Math.toRadians(coneDegrees));
 		for (int i = 1; i <= 12; i++) {
-			Vec3d direction = applySpread(forward, world, 22.0D);
+			Vec3d direction = applySpread(forward, world, GunUpgradeService.spread(stack, 22.0D));
 			Vec3d pos = start.add(direction.multiply(i * range / 12.0D));
 			world.spawnParticles(ParticleTypes.FLAME, pos.x, pos.y, pos.z, 2, 0.04D, 0.04D, 0.04D, 0.01D);
 			world.spawnParticles(ParticleTypes.SMOKE, pos.x, pos.y, pos.z, 1, 0.04D, 0.04D, 0.04D, 0.0D);
@@ -301,7 +344,7 @@ public final class SniperRifleServer {
 			if (toTarget.length() > range || toTarget.normalize().dotProduct(forward) < coneDot || isBlocked(world, player, start, targetPos)) {
 				continue;
 			}
-			target.damage(world, player.getDamageSources().playerAttack(player), 2.0F);
+			target.damage(world, player.getDamageSources().playerAttack(player), GunUpgradeService.damage(stack, 2.0F));
 			target.setOnFireFor(3.0F);
 		}
 		world.playSound(null, player.getBlockPos(), SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.PLAYERS, 0.55F, 0.8F);
@@ -329,9 +372,9 @@ public final class SniperRifleServer {
 		target.velocityModified = true;
 	}
 
-	private static void spawnShotgunPellets(ServerWorld world, Vec3d start, Vec3d forward, float yaw, float pitch) {
+	private static void spawnShotgunPellets(ServerWorld world, Vec3d start, Vec3d forward, float yaw, float pitch, double coneDegrees) {
 		for (int i = 0; i < SHOTGUN_PELLETS; i++) {
-			double yawOffset = (world.random.nextDouble() - 0.5D) * ShotgunItem.CONE_DEGREES;
+			double yawOffset = (world.random.nextDouble() - 0.5D) * coneDegrees;
 			double pitchOffset = (world.random.nextDouble() - 0.5D) * 28.0D;
 			Vec3d direction = Vec3d.fromPolar((float) (pitch + pitchOffset), (float) (yaw + yawOffset)).normalize();
 			if (direction.dotProduct(forward) < 0.15D) {
@@ -458,11 +501,22 @@ public final class SniperRifleServer {
 	}
 
 	private static void clear(ServerPlayerEntity player) {
+		AmmoService.clear(player);
 		ZOOM_LEVELS.remove(player.getUuid());
 		FIRE_COOLDOWNS.remove(player.getUuid());
 		SHOTGUN_COOLDOWNS.remove(player.getUuid());
 		GRENADE_LAUNCHER_COOLDOWNS.remove(player.getUuid());
 		ADVANCED_COOLDOWNS.keySet().removeIf(key -> key.startsWith(player.getUuid().toString()));
+	}
+
+	private static void clearAll() {
+		ZOOM_LEVELS.clear();
+		FIRE_COOLDOWNS.clear();
+		SHOTGUN_COOLDOWNS.clear();
+		GRENADE_LAUNCHER_COOLDOWNS.clear();
+		ADVANCED_COOLDOWNS.clear();
+		BULLET_TRACES.clear();
+		AmmoService.clearAll();
 	}
 
 	private record BulletTrace(ServerWorld world, Vec3d start, Vec3d end, int age) {

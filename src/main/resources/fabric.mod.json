@@ -3,7 +3,7 @@
 	"id": "guns",
 	"version": "${version}",
 	"name": "Guns",
-	"description": "Adds the zyguns item group and scoped sniper weapons.",
+	"description": "Server-authoritative Fabric weapons for Minecraft 1.21.3: six survival-craftable guns, ammunition, repairs, upgrades, and Chinese/English localization.",
 	"authors": [
 		"zoyluo"
 	],

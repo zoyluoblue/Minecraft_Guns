@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class ShotgunItem extends Item {
+public class ShotgunItem extends GunItem {
 	public static final double RANGE = 8.0D;
 	public static final double CONE_DEGREES = 150.0D;
 	public static final float BASE_DAMAGE = 15.0F;
@@ -33,5 +33,6 @@ public class ShotgunItem extends Item {
 	public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, net.minecraft.item.tooltip.TooltipType type) {
 		tooltip.add(Text.translatable("tooltip.guns.shotgun.damage", (int) BASE_DAMAGE).formatted(Formatting.GRAY));
 		tooltip.add(Text.translatable("tooltip.guns.shotgun.range", (int) RANGE, (int) CONE_DEGREES).formatted(Formatting.DARK_GRAY));
+		appendUpgradeTooltips(stack, tooltip);
 	}
 }

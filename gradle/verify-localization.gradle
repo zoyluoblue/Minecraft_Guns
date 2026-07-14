@@ -64,3 +64,84 @@ def placeholderTypes(String value) {
 tasks.named("check") {
 	dependsOn tasks.named("verifyTranslations")
 }
+
+def gameplayRecipeDirectory = file("src/main/resources/data/guns/recipe")
+def gameplayModelDirectory = file("src/main/resources/assets/guns/models/item")
+def requiredGameplayRecipes = [
+		"sniper_rifle", "shotgun", "grenade_launcher", "smg", "flamethrower", "railgun",
+		"rifle_round", "shotgun_shell", "grenade_round", "fuel_cell", "railgun_cell",
+		"upgrade_template", "precision_barrel", "cooling_system", "reinforced_receiver",
+		"smithing_precision_barrel", "smithing_cooling_system", "smithing_reinforced_receiver"
+]
+def requiredGameplayModels = [
+		"sniper_rifle", "shotgun", "grenade_launcher", "smg", "flamethrower", "railgun", "grenade_round",
+		"rifle_round", "shotgun_shell", "fuel_cell", "railgun_cell", "upgrade_template",
+		"precision_barrel", "cooling_system", "reinforced_receiver"
+]
+
+tasks.register("verifyGameplayResources") {
+	group = "verification"
+	description = "Checks Guns survival recipes, upgrade tag, and item model coverage."
+	inputs.files(fileTree(gameplayRecipeDirectory), fileTree(gameplayModelDirectory), file("src/main/resources/data/guns/tags/item/upgradeable.json"))
+
+	doLast {
+		if (!gameplayRecipeDirectory.isDirectory()) {
+			throw new GradleException("Missing Guns recipe directory: ${gameplayRecipeDirectory}")
+		}
+		if (!gameplayModelDirectory.isDirectory()) {
+			throw new GradleException("Missing Guns item model directory: ${gameplayModelDirectory}")
+		}
+
+		def parser = new JsonSlurper()
+		def recipes = fileTree(gameplayRecipeDirectory).matching { include "*.json" }.files.collectEntries { recipeFile ->
+			try {
+				[(recipeFile.name - ".json"): parser.parse(recipeFile)]
+			} catch (Exception exception) {
+				throw new GradleException("Invalid recipe JSON: ${recipeFile}", exception)
+			}
+		}
+
+		def missingRecipes = requiredGameplayRecipes.findAll { !recipes.containsKey(it) }
+		if (!missingRecipes.isEmpty()) {
+			throw new GradleException("Missing required Guns recipes: ${missingRecipes}")
+		}
+
+		def outputIds = recipes.values()
+			.findAll { it instanceof Map && it.result instanceof Map && it.result.id instanceof String }
+			.collect { it.result.id }
+		if (outputIds.size() != outputIds.toSet().size()) {
+			throw new GradleException("Duplicate Guns recipe outputs detected: ${outputIds}")
+		}
+
+		def customSmithingRecipes = recipes.findAll { name, recipe -> recipe.type == "guns:smithing_upgrade" }
+		if (customSmithingRecipes.size() != 3) {
+			throw new GradleException("Expected 3 custom Guns Smithing recipes, found ${customSmithingRecipes.size()}")
+		}
+		customSmithingRecipes.each { name, recipe ->
+			["template", "base", "addition", "module"].each { key ->
+				if (!(recipe[key] instanceof String) || recipe[key].trim().isEmpty()) {
+					throw new GradleException("${name}.json must define a non-empty string ${key}")
+				}
+			}
+		}
+
+		def tagFile = file("src/main/resources/data/guns/tags/item/upgradeable.json")
+		def tag = parser.parse(tagFile)
+		def expectedUpgradeable = [
+				"guns:sniper_rifle", "guns:shotgun", "guns:grenade_launcher",
+				"guns:smg", "guns:flamethrower", "guns:railgun"
+		]
+		if (tag.values as Set != expectedUpgradeable as Set) {
+			throw new GradleException("guns:upgradeable tag does not cover exactly the six Guns weapons")
+		}
+
+		def missingModels = requiredGameplayModels.findAll { !new File(gameplayModelDirectory, "${it}.json").isFile() }
+		if (!missingModels.isEmpty()) {
+			throw new GradleException("Missing required Guns item models: ${missingModels}")
+		}
+	}
+}
+
+tasks.named("check") {
+	dependsOn tasks.named("verifyGameplayResources")
+}

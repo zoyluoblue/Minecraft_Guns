@@ -1,0 +1,11 @@
+{
+	"replace": false,
+	"values": [
+		"guns:sniper_rifle",
+		"guns:shotgun",
+		"guns:grenade_launcher",
+		"guns:smg",
+		"guns:flamethrower",
+		"guns:railgun"
+	]
+}

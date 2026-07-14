@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class SniperRifleItem extends Item {
+public class SniperRifleItem extends GunItem {
 	public static final float BASE_DAMAGE = 10.0F;
 	public static final double RANGE = 128.0D;
 	public static final int MAX_ZOOM_LEVEL = 16;
@@ -29,5 +29,6 @@ public class SniperRifleItem extends Item {
 	public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, net.minecraft.item.tooltip.TooltipType type) {
 		tooltip.add(Text.translatable("tooltip.guns.sniper_rifle.damage", (int) BASE_DAMAGE).formatted(Formatting.GRAY));
 		tooltip.add(Text.translatable("tooltip.guns.sniper_rifle.zoom").formatted(Formatting.DARK_GRAY));
+		appendUpgradeTooltips(stack, tooltip);
 	}
 }

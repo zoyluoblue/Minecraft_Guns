@@ -1,0 +1,17 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"IGI",
+		" P "
+	],
+	"key": {
+		"I": "minecraft:iron_nugget",
+		"G": "minecraft:gunpowder",
+		"P": "minecraft:paper"
+	},
+	"result": {
+		"id": "guns:grenade_round",
+		"count": 4
+	}
+}

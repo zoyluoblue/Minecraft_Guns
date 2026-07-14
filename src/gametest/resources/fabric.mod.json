@@ -1,0 +1,22 @@
+{
+	"schemaVersion": 1,
+	"id": "guns-gametest",
+	"version": "1.0.0",
+	"name": "Guns GameTests",
+	"description": "Deterministic GameTests for Guns survival systems.",
+	"environment": "server",
+	"entrypoints": {
+		"main": [
+			"com.zoyluo.guns.gametest.GunsGameTestMod"
+		],
+		"fabric-gametest": [
+			"com.zoyluo.guns.gametest.GunsGameplayGameTests"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.18.4",
+		"minecraft": "1.21.3",
+		"fabric-api": "*",
+		"guns": "*"
+	}
+}
