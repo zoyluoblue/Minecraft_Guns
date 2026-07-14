@@ -99,6 +99,10 @@ Guns 是面向 Minecraft <code>1.21.3</code> 的 Fabric 生存枪械模组。玩
 
 构建会校验中英文语言键一致并编译 GameTest。`runGameTest` 会在隔离的 Dedicated Server 中执行弹药消耗、创造模式弹药、模块 Schema 和 Smithing 配方回归。稳定 ID、协议、生存规则、ItemStack schema 和手工回归矩阵见 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)，完整设计见 [`docs/FEATURE_DESIGN_SURVIVAL_LOOP.md`](docs/FEATURE_DESIGN_SURVIVAL_LOOP.md)。
 
+## 自动发布
+
+推送带注释的 `vX.Y.Z` tag 后，GitHub 会自动创建新的 Release。工作流要求 tag 版本与 `gradle.properties` 中的 `mod_version` 一致，并且已准备双语 `docs/RELEASE_NOTES_X.Y.Z.md`。随后它会执行干净构建和 Dedicated Server GameTest、校验正式 JAR，并上传正式 JAR、sources JAR、SHA256 校验值和两张配方宣传图；任一检查失败都不会创建 Release。
+
 ## 演示
 
 [点击查看演示视频](https://www.youtube.com/watch?v=7KhDonhsX98)

@@ -97,6 +97,10 @@ English and Simplified Chinese are included. Switch through Minecraft's native *
 
 The build verifies bilingual key parity and compiles the GameTest source set. `runGameTest` executes ammunition consumption, creative-mode ammunition, upgrade schema, and Smithing recipe regression tests in an isolated dedicated server. Stable IDs, protocol contracts, survival rules, ItemStack schema, and the manual regression matrix are in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). The detailed feature design is in [`docs/FEATURE_DESIGN_SURVIVAL_LOOP.md`](docs/FEATURE_DESIGN_SURVIVAL_LOOP.md).
 
+## Release automation
+
+Push an annotated `vX.Y.Z` tag to publish a new GitHub Release automatically. The workflow requires the tag version to match `mod_version` in `gradle.properties` and a bilingual `docs/RELEASE_NOTES_X.Y.Z.md` file. It then runs a clean build and the dedicated-server GameTests, validates the release JAR, and uploads the production JAR, sources JAR, SHA256 checksum, and both recipe posters. A failed check creates no Release.
+
 ## Demo
 
 [Watch the demo video](https://www.youtube.com/watch?v=7KhDonhsX98)

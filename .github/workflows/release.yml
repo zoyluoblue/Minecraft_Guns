@@ -8,12 +8,18 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout tagged source
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Set up Java 21
         uses: actions/setup-java@v4
         with:
@@ -22,12 +28,57 @@ jobs:
           cache: gradle
       - name: Make Gradle wrapper executable
         run: chmod +x gradlew
-      - name: Build release artifacts
-        run: ./gradlew build --no-daemon --stacktrace
-      - name: Create GitHub Release
+      - name: Validate release contract
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+
+          VERSION="${TAG#v}"
+          PROJECT_VERSION="$(sed -n 's/^mod_version=//p' gradle.properties)"
+          [[ "$VERSION" == "$PROJECT_VERSION" ]]
+          test -f "docs/RELEASE_NOTES_${VERSION}.md"
+      - name: Build and run release checks
+        run: ./gradlew clean build runGameTest --no-daemon --stacktrace
+      - name: Package verified release assets
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          VERSION="${TAG#v}"
+          mkdir -p release
+
+          MAIN_JAR="$(find build/libs -maxdepth 1 -type f -name "*-${VERSION}.jar" ! -name '*-sources.jar' -print -quit)"
+          SOURCE_JAR="$(find build/libs -maxdepth 1 -type f -name "*-${VERSION}-sources.jar" -print -quit)"
+          [[ -n "$MAIN_JAR" ]]
+          [[ -n "$SOURCE_JAR" ]]
+          [[ "$(find build/libs -maxdepth 1 -type f -name "*-${VERSION}.jar" ! -name '*-sources.jar' -print | wc -l | tr -d ' ')" -eq 1 ]]
+          [[ "$(find build/libs -maxdepth 1 -type f -name "*-${VERSION}-sources.jar" -print | wc -l | tr -d ' ')" -eq 1 ]]
+
+          unzip -t "$MAIN_JAR"
+          jar tf "$MAIN_JAR" | grep -qx 'fabric.mod.json'
+          jar tf "$MAIN_JAR" | grep -qx 'assets/guns/lang/en_us.json'
+          jar tf "$MAIN_JAR" | grep -qx 'assets/guns/lang/zh_cn.json'
+
+          cp "$MAIN_JAR" release/
+          cp "$SOURCE_JAR" release/
+          cp assets/guns/recipes/gun-recipes-reference.png release/
+          cp assets/guns/recipes/ammo-recipes-reference.png release/
+          sha256sum release/*.jar > release/SHA256SUMS.txt
+      - name: Create or update GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
         run: |
-          gh release create "${GITHUB_REF_NAME}" build/libs/*.jar \
-            --title "${GITHUB_REPOSITORY#*/} ${GITHUB_REF_NAME}" \
-            --generate-notes
+          set -euo pipefail
+          VERSION="${TAG#v}"
+          NOTES_FILE="docs/RELEASE_NOTES_${VERSION}.md"
+          TITLE="Guns ${TAG} — Minecraft Fabric Release"
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" release/* --clobber
+            gh release edit "$TAG" --title "$TITLE" --notes-file "$NOTES_FILE"
+          else
+            gh release create "$TAG" release/* --title "$TITLE" --notes-file "$NOTES_FILE"
+          fi
