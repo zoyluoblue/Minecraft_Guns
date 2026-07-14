@@ -78,6 +78,14 @@ Guns 是面向 Minecraft <code>1.21.3</code> 的 Fabric 生存枪械模组。玩
 
 已将六把枪和五种弹药的确认版配方图，以及由图中素材提取的游戏贴图归档到 [Guns 素材库](assets/guns/README.md)。狙击枪和冲锋枪继续共用步枪弹，只有美术资源发生变化。
 
+## 配方宣传图
+
+两张双语说明图完整展示生存玩法循环：六把枪械与五种弹药，其中狙击枪和冲锋枪共用步枪弹。
+
+[![Guns 生存枪械配方](assets/guns/recipes/gun-recipes-reference.png)](assets/guns/recipes/gun-recipes-reference.png)
+
+[![Guns 弹药配方](assets/guns/recipes/ammo-recipes-reference.png)](assets/guns/recipes/ammo-recipes-reference.png)
+
 ## 语言切换
 
 内置简体中文和英文，通过 Minecraft 原生“设置 → 语言”切换，无需额外配置界面。

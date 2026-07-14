@@ -63,6 +63,14 @@ There are no rarity tiers, technology ages, external-Mod integrations, or PvP-sp
 
 The approved weapon and ammunition recipe posters, plus the game textures derived from their icons, are archived in the [Guns art asset library](assets/guns/README.md). Sniper Rifle and SMG still share Rifle Round; this update changes visuals only.
 
+## Recipe posters
+
+These two bilingual posters show the complete survival crafting loop: six weapons and five ammunition types, including the shared Rifle Round used by the Sniper Rifle and SMG.
+
+[![Guns survival weapon recipes](assets/guns/recipes/gun-recipes-reference.png)](assets/guns/recipes/gun-recipes-reference.png)
+
+[![Guns ammunition recipes](assets/guns/recipes/ammo-recipes-reference.png)](assets/guns/recipes/ammo-recipes-reference.png)
+
 ## Obtain items
 
 ~~~mcfunction
