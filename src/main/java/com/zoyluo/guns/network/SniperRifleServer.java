@@ -6,7 +6,6 @@ import com.zoyluo.guns.item.GrenadeLauncherItem;
 import com.zoyluo.guns.item.ShotgunItem;
 import com.zoyluo.guns.item.SniperRifleItem;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -51,11 +50,6 @@ public final class SniperRifleServer {
 	}
 
 	public static void register() {
-		PayloadTypeRegistry.playC2S().register(SniperZoomPayload.ID, SniperZoomPayload.CODEC);
-		PayloadTypeRegistry.playC2S().register(SniperFirePayload.ID, SniperFirePayload.CODEC);
-		PayloadTypeRegistry.playC2S().register(ShotgunFirePayload.ID, ShotgunFirePayload.CODEC);
-		PayloadTypeRegistry.playC2S().register(GrenadeLauncherFirePayload.ID, GrenadeLauncherFirePayload.CODEC);
-		PayloadTypeRegistry.playC2S().register(AdvancedWeaponFirePayload.ID, AdvancedWeaponFirePayload.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(SniperZoomPayload.ID, (payload, context) -> setZoom(context.player(), payload.zoomLevel()));
 		ServerPlayNetworking.registerGlobalReceiver(SniperFirePayload.ID, (payload, context) -> fire(context.player()));
 		ServerPlayNetworking.registerGlobalReceiver(ShotgunFirePayload.ID, (payload, context) -> fireShotgun(context.player()));

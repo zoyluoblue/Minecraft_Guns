@@ -1,46 +1,47 @@
-# 项目地址
-
-## 演示
-
-<video src="[./demo/guns.mp4](https://www.youtube.com/watch?v=7KhDonhsX98)" controls width="100%"></video>
-
-[无法播放时点击查看演示视频](https://www.youtube.com/watch?v=7KhDonhsX98)
-
-![演示 1](./demo/gun1.png)
-
-![演示 2](./demo/gun2.png)
-
 # Guns 2.0.0
 
-适用于 Minecraft `1.21.3`、Fabric Loader `0.18.4` 的 Fabric 枪械模组。
+[简体中文](README.zh-CN.md) | English
 
-## 创造模式物品栏
+Guns is a Fabric weapon mod for Minecraft 1.21.3 and Fabric Loader 0.18.4. It provides six creative-mode weapons with server-authoritative hit detection, damage, cooldowns, durability, and explosions.
 
-模组新增创造模式分类栏“新型武器”，用于放置当前设计的枪械。
+## Weapons
 
-## 获取命令
+- `guns:sniper_rifle`: right-click cycles `1x/2x/4x/8x/16x`; left-click fires while scoped. Base damage `10`.
+- `guns:shotgun`: an eight-block, 150-degree cone with distance-based damage and knockback falloff.
+- `guns:grenade_launcher`: launches an arcing grenade that explodes at TNT power on impact.
+- `guns:smg`: hold left-click for automatic fire at five shots per second; base damage `2`.
+- `guns:flamethrower`: a short-range continuous flame cone that damages and ignites targets.
+- `guns:railgun`: a long-cooldown `35`-damage beam that pierces multiple entities until blocked.
 
-```mcfunction
+## Obtain items
+
+~~~mcfunction
 /give @p guns:sniper_rifle
 /give @p guns:shotgun
 /give @p guns:grenade_launcher
 /give @p guns:smg
 /give @p guns:flamethrower
 /give @p guns:railgun
-```
+~~~
 
-## 武器说明
+The current version has no survival crafting recipes. Weapons appear in the “New Weapons” creative tab, use a two-handed pose, suppress the vanilla main-hand attack swing while firing, and support sword-damage and durability enchantment tags where applicable.
 
-- 狙击枪 `guns:sniper_rifle`：右键切换 `1x/2x/4x/8x/16x` 倍镜，开镜后左键射击，基础伤害 10，不穿透目标。
-- 霰弹枪 `guns:shotgun`：近距离 150 度扇形打击，射程 8 格，伤害和击退随距离衰减。
-- 榴弹枪 `guns:grenade_launcher`：发射黑色圆形榴弹，榴弹按抛物线飞行，接触实体、方块或落地后产生 TNT 强度爆炸。
-- 冲锋枪 `guns:smg`：按住左键连续射击，每秒 5 发，每发基础伤害 2。
-- 火焰喷射器 `guns:flamethrower`：按住左键持续喷火，短距离范围伤害并点燃目标。
-- 电磁轨道炮 `guns:railgun`：单发高伤害光柱，基础伤害 35，可穿透路径上的多个生物，直到命中方块障碍物。
+## Language
 
-## 通用设定
+English and Simplified Chinese are included. Switch through Minecraft's native **Options → Language** screen.
 
-- 当前枪械暂不支持合成获得。
-- 持枪时会使用双手持枪姿势。
-- 枪械射击会拦截原版主手挥动攻击动作，减少视野遮挡。
-- 命中类枪械会复用剑类伤害附魔逻辑；耐久类附魔也可用于枪械。
+## Build
+
+~~~bash
+./gradlew clean build --no-daemon --stacktrace
+~~~
+
+The build verifies bilingual key parity. Stable IDs, protocol contracts, weapon values, and the manual regression matrix are in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+
+## Demo
+
+[Watch the demo video](https://www.youtube.com/watch?v=7KhDonhsX98)
+
+![Demo 1](./demo/gun1.png)
+
+![Demo 2](./demo/gun2.png)
