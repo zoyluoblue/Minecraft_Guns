@@ -33,8 +33,9 @@ public final class GunParticle extends SpriteBillboardParticle {
 		this.velocityX = velocityX;
 		this.velocityY = velocityY;
 		this.velocityZ = velocityZ;
-		this.startScale = behavior.startScale * (0.9F + random.nextFloat() * 0.2F);
-		this.endScale = behavior.endScale * (0.9F + random.nextFloat() * 0.2F);
+		float scaleVariance = behavior.uniformScale() ? 1.0F : 0.9F + random.nextFloat() * 0.2F;
+		this.startScale = behavior.startScale * scaleVariance;
+		this.endScale = behavior.endScale * scaleVariance;
 		this.startAlpha = behavior.alpha;
 		this.spin = behavior.spin * (random.nextBoolean() ? 1.0F : -1.0F);
 		this.textureSheet = behavior.textureSheet;
@@ -85,10 +86,10 @@ public final class GunParticle extends SpriteBillboardParticle {
 		BLAST_WAVE(7, 2, 0.42F, 1.55F, 0.84F, 1.00F, 0.48F, 0.08F, 0.0F, 1.00F, 0.0F, false, ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT),
 		SHOCKWAVE(7, 2, 0.45F, 1.65F, 0.82F, 0.20F, 0.92F, 1.00F, 0.0F, 1.00F, 0.0F, false, ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT),
 		GRAY_ROUND(4, 1, 0.13F, 0.09F, 1.0F, 1.00F, 1.00F, 1.00F, 0.0F, 0.96F, 0.0F, false, ParticleTextureSheet.PARTICLE_SHEET_OPAQUE),
-		GRAY_RANGE(5, 1, 0.16F, 0.07F, 0.72F, 1.00F, 1.00F, 1.00F, 0.0F, 0.90F, 0.04F, false, ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT),
+		GRAY_RANGE(6, 1, 0.25F, 0.10F, 0.90F, 1.00F, 1.00F, 1.00F, 0.0F, 0.94F, 0.04F, false, ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT),
 		BLACK_ROUND(3, 1, 0.12F, 0.08F, 1.0F, 1.00F, 1.00F, 1.00F, 0.0F, 0.94F, 0.0F, false, ParticleTextureSheet.PARTICLE_SHEET_OPAQUE),
 		FLAME_JET(14, 4, 0.18F, 0.46F, 1.0F, 1.00F, 1.00F, 1.00F, -0.015F, 0.96F, 0.0F, false, ParticleTextureSheet.PARTICLE_SHEET_OPAQUE),
-		WHITE_BEAM(BallisticsVisuals.RAILGUN_FADE_TICKS, 0, 0.12F, 0.035F, 0.92F, 1.00F, 1.00F, 1.00F, 0.0F, 1.00F, 0.0F, false, ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT);
+		WHITE_BEAM(BallisticsVisuals.RAILGUN_FADE_TICKS, 0, 1.05F, 0.72F, 0.88F, 1.00F, 1.00F, 1.00F, 0.0F, 1.00F, 0.0F, false, ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT);
 
 		private final int minAge;
 		private final int ageVariance;
@@ -136,6 +137,10 @@ public final class GunParticle extends SpriteBillboardParticle {
 
 		private boolean randomStartAngle() {
 			return this != GRAY_ROUND && this != BLACK_ROUND && this != FLAME_JET && this != WHITE_BEAM;
+		}
+
+		private boolean uniformScale() {
+			return this == WHITE_BEAM;
 		}
 	}
 }

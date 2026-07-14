@@ -144,14 +144,17 @@ public final class GunsGameplayGameTests implements FabricGameTest {
 		require(context, BallisticsVisuals.sampleCount(0.0D, 1.60D, 80) == 0, "zero-length tracer generated samples");
 		require(context, BallisticsVisuals.sampleCount(Double.NaN, 1.60D, 80) == 0, "invalid tracer length generated samples");
 		require(context, BallisticsVisuals.sampleCount(128.0D, 1.60D, BallisticsVisuals.SNIPER_MAX_SAMPLES) == BallisticsVisuals.SNIPER_MAX_SAMPLES, "sniper solid-round effect exceeded or missed its hard cap");
-		require(context, BallisticsVisuals.sampleCount(8.0D, 2.15D, BallisticsVisuals.SHOTGUN_MAX_SAMPLES_PER_PELLET) == BallisticsVisuals.SHOTGUN_MAX_SAMPLES_PER_PELLET, "shotgun range-effect cap mismatch");
+		require(context, Math.abs(BallisticsVisuals.SNIPER_VISUAL_SPEED - 0.110D) < 0.000001D, "sniper visual speed must be exactly twice the previous value");
+		require(context, BallisticsVisuals.sampleCount(8.0D, 1.55D, BallisticsVisuals.SHOTGUN_MAX_SAMPLES_PER_PELLET) == BallisticsVisuals.SHOTGUN_MAX_SAMPLES_PER_PELLET, "shotgun range-effect cap mismatch");
 		require(context, BallisticsVisuals.sampleCount(32.0D, 2.80D, BallisticsVisuals.SMG_MAX_SAMPLES) == BallisticsVisuals.SMG_MAX_SAMPLES, "SMG solid-round effect cap mismatch");
 
-		require(context, BallisticsVisuals.railgunWorstCaseCalls() == 172, "railgun visual composition call count changed unexpectedly");
+		require(context, BallisticsVisuals.shotgunWorstCaseCalls() == 91, "shotgun visual composition call count changed unexpectedly");
+		require(context, BallisticsVisuals.shotgunWorstCaseCalls() <= BallisticsVisuals.SHOTGUN_MAX_CALLS, "shotgun visual composition exceeds its hard budget");
+		require(context, BallisticsVisuals.railgunWorstCaseCalls() == 204, "railgun visual composition call count changed unexpectedly");
 		require(context, BallisticsVisuals.railgunWorstCaseCalls() <= BallisticsVisuals.RAILGUN_MAX_CALLS, "railgun visual composition exceeds its hard budget");
-		require(context, BallisticsVisuals.RAILGUN_FADE_TICKS == 20, "railgun beam must fade over exactly one second");
+		require(context, BallisticsVisuals.RAILGUN_FADE_TICKS == 60, "railgun beam must fade over exactly three seconds");
 		require(context, BallisticsVisuals.RAILGUN_VISIBLE_ENTITY_HITS == 4, "railgun visible entity impact limit changed");
-		require(context, BallisticsVisuals.SHOTGUN_PELLETS == 7, "shotgun visual pellet count changed");
+		require(context, BallisticsVisuals.SHOTGUN_PELLETS == 13, "shotgun visual pellet count changed");
 		require(context, BallisticsVisuals.FLAMETHROWER_MAX_PARTICLES == 6, "flamethrower moving-particle budget changed");
 		require(context, BallisticsVisuals.GRENADE_TRAIL_MAX_PARTICLES == 3, "grenade trail visual budget changed");
 		context.complete();

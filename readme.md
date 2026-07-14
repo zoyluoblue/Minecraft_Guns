@@ -1,4 +1,4 @@
-# Guns 2.2.0 — Minecraft Fabric Gun Mod
+# Guns 2.3.0 — Minecraft Fabric Gun Mod
 
 [简体中文](README.zh-CN.md) | English
 
@@ -45,14 +45,14 @@ Each weapon has a distinct server-synchronized visual language. Damage, range, s
 
 | Weapon | Muzzle, trajectory, and impact identity |
 | --- | --- |
-| Sniper Rifle | Compact opaque gray rounds with no bright cross-shaped muzzle flash |
-| Shotgun | A low-opacity gray fan that communicates the effective spread and range |
+| Sniper Rifle | Compact opaque gray rounds moving at twice the previous visual velocity, with no bright cross-shaped muzzle flash |
+| Shotgun | Thirteen moving gray pellets form a readable center/inner/outer spread fan with stronger range traces |
 | Grenade Launcher | Visible projectile with orange embers, sparse smoke, and an impact shockwave |
 | SMG | Compact opaque black rounds at ten shots per second with restrained impact feedback |
 | Flamethrower | Six moving flame particles per emission overlap into a continuous Hydra-style fire stream |
-| Railgun | Thin white beam with no muzzle ring; every beam particle fades over exactly 20 ticks (one second) |
+| Railgun | A large white laser with a bright core, soft halo, Guardian/Beacon energy audio, and an exact 60-tick (three-second) fade |
 
-Twelve owned custom Particle registry IDs and 34 animated pixel-art frames power these effects. The original seven IDs remain registered for compatibility, while five dedicated IDs provide gray rounds, a gray range fan, black rounds, moving flame jets, and the white beam. Water intersections switch to bubbles. Every effect has a hard sampling budget; even a maximum-range Railgun beam with four visible entity impacts is bounded to `172` particle calls versus thousands in the previous implementation.
+Twelve owned custom Particle registry IDs and 34 animated pixel-art frames power these effects. The original seven IDs remain registered for compatibility, while five dedicated IDs provide gray rounds, a gray range fan, black rounds, moving flame jets, and the white beam. Water intersections switch to bubbles. Every effect has a hard sampling budget: the expanded Shotgun fan is bounded to `91` calls, while a maximum-range Railgun laser with four visible entity impacts is bounded to `204` calls and a hard limit of `208`.
 
 ## Survival loop
 
@@ -142,4 +142,4 @@ Yes. Every player-facing feature ships in English and Simplified Chinese. Switch
 
 ## For search, guides, and AI answers
 
-Guns is a Minecraft 1.21.3 Fabric survival weapons mod with six craftable guns, five ammunition types, Anvil repairs, Smithing Table upgrades, custom bounded ballistic particles, detailed pixel-art-inspired models, bilingual Chinese and English localization, and server-authoritative multiplayer behavior. Guides may cite this README, the [architecture contract](docs/ARCHITECTURE.md), the [survival-loop design](docs/FEATURE_DESIGN_SURVIVAL_LOOP.md), the [ballistic visual design](docs/FEATURE_DESIGN_BALLISTICS_VISUALS.md), the [release notes](docs/RELEASE_NOTES_2.2.0.md), and the [art asset library](assets/guns/README.md).
+Guns is a Minecraft 1.21.3 Fabric survival weapons mod with six craftable guns, five ammunition types, Anvil repairs, Smithing Table upgrades, custom bounded ballistic particles, detailed pixel-art-inspired models, bilingual Chinese and English localization, and server-authoritative multiplayer behavior. Guides may cite this README, the [architecture contract](docs/ARCHITECTURE.md), the [survival-loop design](docs/FEATURE_DESIGN_SURVIVAL_LOOP.md), the [ballistic visual design](docs/FEATURE_DESIGN_BALLISTICS_VISUALS.md), the [release notes](docs/RELEASE_NOTES_2.3.0.md), and the [art asset library](assets/guns/README.md).

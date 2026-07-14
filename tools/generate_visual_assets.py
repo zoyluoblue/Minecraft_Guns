@@ -353,16 +353,16 @@ def particle_texture(kind: str, frame: int) -> list[list[tuple[int, int, int, in
                     set_pixel(pixels, x, y, value)
             set_pixel(pixels, 7 + frame, 6, gray_dark)
     elif kind == "gray_range":
-        radius = 3.4 + frame * 0.55
+        radius = 4.2 + frame * 0.60
         for y in range(size):
             for x in range(size):
                 distance = ((x - 7.5) ** 2 + (y - 7.5) ** 2) ** 0.5
                 if distance > radius:
                     continue
                 edge = distance / radius
-                value = gray_light if edge < 0.38 else gray_mid if edge < 0.72 else gray_dark
-                alpha = round(170 - edge * 78 - frame * 18)
-                set_pixel(pixels, x, y, with_alpha(value, max(58, alpha)))
+                value = gray_light if edge < 0.42 else gray_mid if edge < 0.76 else gray_dark
+                alpha = round(225 - edge * 105 - frame * 14)
+                set_pixel(pixels, x, y, with_alpha(value, max(78, alpha)))
     elif kind == "muzzle_flash":
         reach = 6 - frame
         for offset in range(-reach, reach + 1):
@@ -443,11 +443,24 @@ def particle_texture(kind: str, frame: int) -> list[list[tuple[int, int, int, in
                         value = white if frame == 0 else cyan if frame == 1 else violet
                     set_pixel(pixels, x, y, with_alpha(value, alpha))
     elif kind == "white_beam":
-        bounds = ((6, 9), (7, 9), (7, 8))[frame]
-        for y in range(bounds[0], bounds[1] + 1):
-            for x in range(bounds[0], bounds[1] + 1):
-                edge = x in bounds or y in bounds
-                set_pixel(pixels, x, y, with_alpha(beam_edge if edge and frame < 2 else beam_white, 205 if edge and frame < 2 else 255))
+        radius = 6.8 - frame * 0.45
+        core_radius = 1.9 - frame * 0.20
+        for y in range(size):
+            for x in range(size):
+                distance = ((x - 7.5) ** 2 + (y - 7.5) ** 2) ** 0.5
+                if distance > radius:
+                    continue
+                edge = distance / radius
+                if distance <= core_radius:
+                    value = beam_white
+                    alpha = 255
+                elif edge < 0.58:
+                    value = beam_white
+                    alpha = round(250 - edge * 70 - frame * 8)
+                else:
+                    value = beam_edge
+                    alpha = round(205 - edge * 125 - frame * 10)
+                set_pixel(pixels, x, y, with_alpha(value, max(62, alpha)))
     else:
         raise ValueError(f"unknown particle kind: {kind}")
     return pixels

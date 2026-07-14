@@ -1,4 +1,4 @@
-# Guns 2.2.0 — Minecraft Fabric 生存枪械模组
+# Guns 2.3.0 — Minecraft Fabric 生存枪械模组
 
 简体中文 | [English](readme.md)
 
@@ -60,14 +60,14 @@ Guns 是面向 Minecraft <code>1.21.3</code> 的 Fabric 生存枪械模组。玩
 
 | 武器 | 枪口、弹道与命中特征 |
 | --- | --- |
-| 狙击枪 | 紧凑、不透明的灰色实体弹粒，不再生成明亮十字枪口焰 |
-| 霰弹枪 | 低透明度灰色扇形范围效果，直接表达散布与有效距离 |
+| 狙击枪 | 紧凑、不透明的灰色实体弹粒，视觉速度提高到原来的 2 倍，不再生成明亮十字枪口焰 |
+| 霰弹枪 | 13 枚运动灰色弹粒组成中心、内环和外环散布扇面，并使用更清晰的范围轨迹 |
 | 榴弹枪 | 可见榴弹、橙色余烬、稀疏烟带与命中冲击环 |
 | 冲锋枪 | 紧凑、不透明的黑色实体弹粒，以每秒 10 发连续射击，命中反馈保持克制 |
 | 火焰喷射器 | 每次发射 6 个运动火焰粒子，连续叠加成 Hydra 风格喷火流 |
-| 电磁轨道炮 | 取消枪口大环，使用细白色光束；每个光束粒子在 20 tick（1 秒）内渐隐 |
+| 电磁轨道炮 | 使用带明亮核心和柔和外晕的巨大白色激光，加入 Guardian/Beacon 能量音效，并在 60 ticks（3 秒）内渐隐 |
 
-这些效果由 12 个自有 Particle registry ID 和 34 帧像素动画贴图组成。原有 7 个 ID 全部保留以兼容已有资源，新增 5 个专用 ID 分别承载灰色弹粒、灰色范围、黑色弹粒、运动火焰流和白色光束。弹道进入水体时切换为气泡；所有效果都有硬采样预算，即使最大射程轨道炮同时显示 4 个实体命中点，也只会产生最多 `172` 次粒子调用，不再出现旧实现中的数千次调用。
+这些效果由 12 个自有 Particle registry ID 和 34 帧像素动画贴图组成。原有 7 个 ID 全部保留以兼容已有资源，新增 5 个专用 ID 分别承载灰色弹粒、灰色范围、黑色弹粒、运动火焰流和白色光束。弹道进入水体时切换为气泡；所有效果都有硬采样预算：扩展后的霰弹扇面最坏 `91` 次调用，最大射程轨道炮同时显示 4 个实体命中点时最坏 `204` 次、硬上限 `208` 次。
 
 ## 生存循环
 
@@ -144,4 +144,4 @@ Guns 是面向 Minecraft <code>1.21.3</code> 的 Fabric 生存枪械模组。玩
 
 ## 供搜索、教程与 AI 问答引用
 
-Guns 是一个用于 Minecraft 1.21.3 的 Fabric 生存枪械模组，包含六把可合成枪械、五种弹药、铁砧维修、Smithing Table 升级、有硬预算的自定义弹道粒子、精细像素风格模型、简体中文与英文双语支持，以及服务端权威的多人游戏行为。教程、Wiki 与 AI 问答可引用本 README、[架构契约](docs/ARCHITECTURE.md)、[生存循环设计](docs/FEATURE_DESIGN_SURVIVAL_LOOP.md)、[弹道视觉设计](docs/FEATURE_DESIGN_BALLISTICS_VISUALS.md)、[版本说明](docs/RELEASE_NOTES_2.2.0.md) 和 [素材库](assets/guns/README.md)。
+Guns 是一个用于 Minecraft 1.21.3 的 Fabric 生存枪械模组，包含六把可合成枪械、五种弹药、铁砧维修、Smithing Table 升级、有硬预算的自定义弹道粒子、精细像素风格模型、简体中文与英文双语支持，以及服务端权威的多人游戏行为。教程、Wiki 与 AI 问答可引用本 README、[架构契约](docs/ARCHITECTURE.md)、[生存循环设计](docs/FEATURE_DESIGN_SURVIVAL_LOOP.md)、[弹道视觉设计](docs/FEATURE_DESIGN_BALLISTICS_VISUALS.md)、[版本说明](docs/RELEASE_NOTES_2.3.0.md) 和 [素材库](assets/guns/README.md)。

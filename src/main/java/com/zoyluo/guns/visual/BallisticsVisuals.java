@@ -20,17 +20,22 @@ import java.util.List;
  */
 public final class BallisticsVisuals {
 	public static final int SNIPER_MAX_SAMPLES = 80;
-	public static final int SHOTGUN_PELLETS = 7;
-	public static final int SHOTGUN_MAX_SAMPLES_PER_PELLET = 4;
+	public static final double SNIPER_VISUAL_SPEED = 0.110D;
+	public static final int SHOTGUN_PELLETS = 13;
+	public static final int SHOTGUN_MAX_SAMPLES_PER_PELLET = 5;
+	public static final int SHOTGUN_MAX_CALLS = 96;
 	public static final int SMG_MAX_SAMPLES = 12;
 	public static final int FLAMETHROWER_MAX_PARTICLES = 6;
 	public static final int GRENADE_TRAIL_MAX_PARTICLES = 3;
-	public static final int RAILGUN_MAX_CALLS = 192;
+	public static final int RAILGUN_MAX_CALLS = 208;
 	public static final int RAILGUN_VISIBLE_ENTITY_HITS = 4;
-	public static final int RAILGUN_FADE_TICKS = 20;
+	public static final int RAILGUN_FADE_TICKS = 60;
 
 	private static final double TWO_PI = Math.PI * 2.0D;
-	private static final int RAILGUN_BEAM_MAX_SAMPLES = 160;
+	private static final int SHOTGUN_RING_PELLETS = 6;
+	private static final double SHOTGUN_TRAIL_SPEED = 0.160D;
+	private static final double SHOTGUN_PELLET_SPEED = 0.520D;
+	private static final int RAILGUN_BEAM_MAX_SAMPLES = 192;
 	private static final int RAILGUN_ENTITY_HIT_PARTICLES = 2;
 	private static final int RAILGUN_BLOCK_IMPACT_PARTICLES = 4;
 
@@ -39,7 +44,7 @@ public final class BallisticsVisuals {
 
 	public static void sniper(ServerWorld world, Vec3d muzzle, Vec3d end, boolean impacted) {
 		Vec3d direction = direction(muzzle, end);
-		spawnLine(world, muzzle, end, ModParticles.GRAY_ROUND, 1.60D, SNIPER_MAX_SAMPLES, 0.055D);
+		spawnLine(world, muzzle, end, ModParticles.GRAY_ROUND, 1.60D, SNIPER_MAX_SAMPLES, SNIPER_VISUAL_SPEED);
 		if (impacted) {
 			solidImpact(world, end, direction, ModParticles.GRAY_ROUND, 3, true);
 		}
@@ -55,12 +60,17 @@ public final class BallisticsVisuals {
 			double coneDegrees,
 			double range
 	) {
-		double yawRadius = Math.min(34.0D, coneDegrees * 0.22D);
-		double pitchRadius = Math.min(18.0D, coneDegrees * 0.12D);
+		double yawRadius = Math.min(54.0D, coneDegrees * 0.36D);
+		double pitchRadius = Math.min(28.0D, coneDegrees * 0.19D);
+		double patternRotation = world.random.nextDouble() * TWO_PI;
 		for (int pellet = 0; pellet < SHOTGUN_PELLETS; pellet++) {
-			double ringAngle = pellet == 0 ? 0.0D : (pellet - 1) * TWO_PI / (SHOTGUN_PELLETS - 1);
-			double yawOffset = pellet == 0 ? 0.0D : Math.cos(ringAngle) * yawRadius;
-			double pitchOffset = pellet == 0 ? 0.0D : Math.sin(ringAngle) * pitchRadius;
+			int ring = pellet == 0 ? 0 : 1 + (pellet - 1) / SHOTGUN_RING_PELLETS;
+			int ringIndex = pellet == 0 ? 0 : (pellet - 1) % SHOTGUN_RING_PELLETS;
+			double ringScale = ring == 0 ? 0.0D : ring == 1 ? 0.52D : 1.0D;
+			double ringPhase = ring == 2 ? Math.PI / SHOTGUN_RING_PELLETS : 0.0D;
+			double ringAngle = patternRotation + ringIndex * TWO_PI / SHOTGUN_RING_PELLETS + ringPhase;
+			double yawOffset = Math.cos(ringAngle) * yawRadius * ringScale;
+			double pitchOffset = Math.sin(ringAngle) * pitchRadius * ringScale;
 			Vec3d pelletDirection = Vec3d.fromPolar((float) (pitch + pitchOffset), (float) (yaw + yawOffset)).normalize();
 			if (pelletDirection.dotProduct(forward) < 0.1D) {
 				pelletDirection = forward;
@@ -75,9 +85,10 @@ public final class BallisticsVisuals {
 			));
 			boolean impacted = blockHit.getType() == HitResult.Type.BLOCK;
 			Vec3d pelletEnd = impacted ? blockHit.getPos() : intendedEnd;
-			double visualOffset = Math.min(0.45D, muzzle.distanceTo(pelletEnd) * 0.25D);
+			double visualOffset = Math.min(0.32D, muzzle.distanceTo(pelletEnd) * 0.20D);
 			Vec3d visualStart = muzzle.add(pelletDirection.multiply(visualOffset));
-			spawnLine(world, visualStart, pelletEnd, ModParticles.GRAY_RANGE, 2.15D, SHOTGUN_MAX_SAMPLES_PER_PELLET, 0.012D);
+			spawnGrayRoundOrBubble(world, visualStart, pelletDirection.multiply(SHOTGUN_PELLET_SPEED));
+			spawnLine(world, visualStart, pelletEnd, ModParticles.GRAY_RANGE, 1.55D, SHOTGUN_MAX_SAMPLES_PER_PELLET, SHOTGUN_TRAIL_SPEED);
 			if (impacted) {
 				solidImpact(world, pelletEnd, pelletDirection, ModParticles.GRAY_RANGE, 1, false);
 			}
@@ -159,7 +170,7 @@ public final class BallisticsVisuals {
 		}
 		int calls = 0;
 
-		int beamSamples = sampleCount(length, 0.72D, RAILGUN_BEAM_MAX_SAMPLES);
+		int beamSamples = sampleCount(length, 0.82D, RAILGUN_BEAM_MAX_SAMPLES);
 		for (int i = 0; i < beamSamples && calls < RAILGUN_MAX_CALLS; i++) {
 			double progress = beamSamples == 1 ? 0.0D : i / (double) (beamSamples - 1);
 			Vec3d position = muzzle.lerp(end, progress);
@@ -171,7 +182,7 @@ public final class BallisticsVisuals {
 		for (int hitIndex = 0; hitIndex < visibleEntityHits && calls < RAILGUN_MAX_CALLS; hitIndex++) {
 			Vec3d hitPosition = entityHits.get(hitIndex);
 			for (int spark = 0; spark < RAILGUN_ENTITY_HIT_PARTICLES && calls < RAILGUN_MAX_CALLS; spark++) {
-				spawnWhiteBeamOrBubble(world, hitPosition, randomUnit(world).multiply(0.018D));
+				spawnRailgunImpactOrBubble(world, hitPosition, randomUnit(world).multiply(0.018D));
 				calls++;
 			}
 		}
@@ -179,7 +190,7 @@ public final class BallisticsVisuals {
 		if (blocked && calls < RAILGUN_MAX_CALLS) {
 			for (int i = 0; i < RAILGUN_BLOCK_IMPACT_PARTICLES && calls < RAILGUN_MAX_CALLS; i++) {
 				Vec3d velocity = randomUnit(world).multiply(0.012D + world.random.nextDouble() * 0.016D);
-				spawnWhiteBeamOrBubble(world, end, velocity);
+				spawnRailgunImpactOrBubble(world, end, velocity);
 				calls++;
 			}
 		}
@@ -201,6 +212,10 @@ public final class BallisticsVisuals {
 		return RAILGUN_BEAM_MAX_SAMPLES
 				+ RAILGUN_BLOCK_IMPACT_PARTICLES
 				+ RAILGUN_VISIBLE_ENTITY_HITS * RAILGUN_ENTITY_HIT_PARTICLES;
+	}
+
+	public static int shotgunWorstCaseCalls() {
+		return SHOTGUN_PELLETS * (SHOTGUN_MAX_SAMPLES_PER_PELLET + 2);
 	}
 
 	private static void spawnLine(
@@ -257,8 +272,16 @@ public final class BallisticsVisuals {
 		spawnDirected(world, isUnderwater(world, position) ? ParticleTypes.BUBBLE : ModParticles.FLAME_JET, position, velocity);
 	}
 
+	private static void spawnGrayRoundOrBubble(ServerWorld world, Vec3d position, Vec3d velocity) {
+		spawnDirected(world, isUnderwater(world, position) ? ParticleTypes.BUBBLE : ModParticles.GRAY_ROUND, position, velocity);
+	}
+
 	private static void spawnWhiteBeamOrBubble(ServerWorld world, Vec3d position, Vec3d velocity) {
 		spawnDirected(world, isUnderwater(world, position) ? ParticleTypes.BUBBLE : ModParticles.WHITE_BEAM, position, velocity);
+	}
+
+	private static void spawnRailgunImpactOrBubble(ServerWorld world, Vec3d position, Vec3d velocity) {
+		spawnDirected(world, isUnderwater(world, position) ? ParticleTypes.BUBBLE : ParticleTypes.END_ROD, position, velocity);
 	}
 
 	private static void spawnMuzzleOrBubble(ServerWorld world, Vec3d position, Vec3d velocity) {

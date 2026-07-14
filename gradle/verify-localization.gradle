@@ -317,7 +317,13 @@ tasks.register("verifyBallisticsResources") {
 			}
 		}
 		if (!clientParticleSource.contains("WHITE_BEAM(BallisticsVisuals.RAILGUN_FADE_TICKS, 0")) {
-			throw new GradleException("White Railgun beam must use the exact common 20-tick fade contract")
+			throw new GradleException("White Railgun beam must use the exact common 60-tick fade contract")
+		}
+		if (!serverVisualSource.contains("SNIPER_VISUAL_SPEED = 0.110D;") || !serverVisualSource.contains("SHOTGUN_PELLETS = 13;") || !serverVisualSource.contains("RAILGUN_FADE_TICKS = 60;")) {
+			throw new GradleException("Requested Sniper, Shotgun, or Railgun visual contracts are missing")
+		}
+		if (!weaponServerSource.contains("SoundEvents.ENTITY_GUARDIAN_ATTACK") || !weaponServerSource.contains("SoundEvents.BLOCK_BEACON_ACTIVATE")) {
+			throw new GradleException("Railgun must retain its laser sound composition")
 		}
 		if (!weaponServerSource.contains("SMG_COOLDOWN_TICKS = 2;") || !weaponServerSource.contains("cooldown(stack, SMG_COOLDOWN_TICKS)")) {
 			throw new GradleException("SMG must use the requested two-tick base cooldown")

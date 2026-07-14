@@ -4,6 +4,48 @@ All notable changes are documented here. Versions follow Semantic Versioning.
 
 所有重要变更均记录于此。版本号遵循 Semantic Versioning。
 
+## 2.3.0 — 2026-07-14
+
+### Added / 新增
+
+- Added a Railgun laser-audio composition using Minecraft's Guardian attack and Beacon activation sounds.
+- 使用 Minecraft 原版 Guardian 攻击音效与 Beacon 激活音效，为电磁轨道炮加入激光音效组合。
+
+### Changed / 变更
+
+- Rebuilt the Railgun trajectory as a large white laser with a bright core, soft halo, and an exact three-second fade.
+- Doubled the Sniper Rifle's gray-round visual velocity from `0.055` to `0.110` blocks per tick without changing hitscan gameplay.
+- Expanded the Shotgun from seven faint visual traces to 13 moving pellets in a center/inner/outer spread pattern, with stronger gray range textures and a bounded worst case of `91` particle calls.
+
+- 将电磁轨道炮弹道重做为带明亮核心和柔和外晕的巨大白色激光，并精确在 3 秒内渐隐。
+- 将狙击枪灰色弹粒视觉速度从每 tick `0.055` 格提高到 `0.110` 格，不改变 hitscan 玩法判定。
+- 将霰弹枪从 7 条较弱视觉轨迹扩展为中心、内环和外环组成的 13 枚运动弹粒，提高灰色范围材质可见度，最坏粒子调用仍限制为 `91` 次。
+
+### Fixed / 修复
+
+- Added a distance-aware Railgun muzzle offset and kept impact particles small, preventing the large beam from reversing at close range or turning hits into oversized flashes.
+- 为轨道炮加入随命中距离调整的枪口偏移，并保持命中粒子为小尺寸，避免近距离光束反向或命中产生过大闪光。
+
+### Performance / 性能
+
+- Shotgun visual calls are bounded to `91/96` worst/hard maximum; Railgun calls are bounded to `204/208`. The Railgun's 60-tick lifetime matches its base cooldown to prevent unbounded accumulation.
+- 霰弹视觉调用限制为最坏/硬上限 `91/96`，轨道炮限制为 `204/208`；轨道炮 60-tick 寿命与基础冷却一致，不会无界叠加。
+
+### Compatibility / 兼容性
+
+- No damage, range, cooldown, Payload, save schema, dependency, or registry ID changes.
+- 不改变伤害、射程、冷却、Payload、存档 Schema、依赖或 registry ID。
+
+### Migration / 迁移
+
+- No migration is required. Clients and Dedicated Servers must use the same `2.3.0` JAR.
+- 不需要迁移；客户端与 Dedicated Server 必须使用相同的 `2.3.0` JAR。
+
+### Known Issues / 已知问题
+
+- No known functional regression. Perceived laser size and volume still depend on FOV, camera distance, particle settings, and audio settings.
+- 未发现功能回归；激光的视觉尺寸和音量仍会受到 FOV、观察距离、粒子设置与音量设置影响。
+
 ## 2.2.0 — 2026-07-14
 
 ### Changed / 变更

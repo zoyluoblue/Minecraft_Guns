@@ -322,7 +322,8 @@ public final class SniperRifleServer {
 			target.damage(world, player.getDamageSources().playerAttack(player), damage);
 			EnchantmentHelper.onTargetDamaged(world, target, player.getDamageSources().playerAttack(player), stack);
 		}
-		Vec3d muzzle = start.add(direction.multiply(1.40D));
+		double visualDistance = start.distanceTo(visualEnd);
+		Vec3d muzzle = start.add(direction.multiply(Math.min(1.85D, visualDistance * 0.40D)));
 		BallisticsVisuals.railgun(
 				world,
 				muzzle,
@@ -330,8 +331,8 @@ public final class SniperRifleServer {
 				blockHit.getType() == HitResult.Type.BLOCK,
 				hits.stream().limit(BallisticsVisuals.RAILGUN_VISIBLE_ENTITY_HITS).map(EntityHitResult::getPos).toList()
 		);
-		world.playSound(null, player.getBlockPos(), SoundEvents.BLOCK_BEACON_POWER_SELECT, SoundCategory.PLAYERS, 1.0F, 0.6F);
-		world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_GENERIC_EXPLODE.value(), SoundCategory.PLAYERS, 0.45F, 1.9F);
+		world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_GUARDIAN_ATTACK, SoundCategory.PLAYERS, 1.25F, 0.72F);
+		world.playSound(null, player.getBlockPos(), SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.PLAYERS, 0.70F, 1.65F);
 		stack.damage(2, player, EquipmentSlot.MAINHAND);
 	}
 
