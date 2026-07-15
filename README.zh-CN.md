@@ -122,7 +122,7 @@ Guns 是面向 Minecraft <code>1.21.3</code> 的 Fabric 生存枪械模组。玩
 
 ## 演示
 
-[点击查看演示视频](https://www.youtube.com/watch?v=7KhDonhsX98)
+[![点击观看演示视频](https://img.youtube.com/vi/TYwqlAFJu6Y/maxresdefault.jpg)](https://youtu.be/TYwqlAFJu6Y?si=d2Ua3hVgWfarkCGv)
 
 ## 常见问题
 

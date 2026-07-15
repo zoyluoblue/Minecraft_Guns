@@ -120,7 +120,7 @@ Push an annotated `vX.Y.Z` tag to publish a new GitHub Release automatically. Th
 
 ## Demo
 
-[Watch the demo video](https://www.youtube.com/watch?v=7KhDonhsX98)
+[![Watch the demo video](https://img.youtube.com/vi/TYwqlAFJu6Y/maxresdefault.jpg)](https://youtu.be/TYwqlAFJu6Y?si=d2Ua3hVgWfarkCGv)
 
 ## Frequently asked questions
 
