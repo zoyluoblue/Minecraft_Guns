@@ -7,6 +7,7 @@
 [![Java 21](https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white)](https://adoptium.net/)
 [![License](https://img.shields.io/badge/License-MIT-3DA639)](LICENSE)
 [![Releases](https://img.shields.io/github/v/release/zoyluoblue/Minecraft_Guns?display_name=tag)](https://github.com/zoyluoblue/Minecraft_Guns/releases)
+[![Modrinth](https://img.shields.io/badge/Modrinth-下载-5BD?logo=modrinth&logoColor=white)](https://modrinth.com/mod/zoyluo-guns/)
 
 Guns 是面向 Minecraft <code>1.21.3</code> 的 Fabric 生存枪械模组。玩家可用原版材料合成六把武器、制造弹药、在铁砧维修装备，并在 Smithing Table 安装固定升级。命中、伤害、冷却、耐久与爆炸都由服务端权威计算，支持 Dedicated Server，并通过 Minecraft 原生语言设置提供简体中文和英文。
 
@@ -21,12 +22,12 @@ Guns 是面向 Minecraft <code>1.21.3</code> 的 Fabric 生存枪械模组。玩
 | 玩法 | 六把枪、五种弹药、原版材料合成、铁砧维修、Smithing Table 升级 |
 | 多人服务器 | 服务端权威，Dedicated Server 路径由 GameTest 覆盖 |
 | 语言 | 简体中文和英文，通过“设置 → 语言”切换 |
-| 下载 | [GitHub Releases](https://github.com/zoyluoblue/Minecraft_Guns/releases) |
+| 下载 | [GitHub Releases](https://github.com/zoyluoblue/Minecraft_Guns/releases) · [Modrinth](https://modrinth.com/mod/zoyluo-guns/) |
 
 ## 安装
 
 1. 安装 Minecraft 1.21.3 对应的 Fabric Loader 和 Fabric API。
-2. 从 [GitHub Releases](https://github.com/zoyluoblue/Minecraft_Guns/releases) 下载非 sources 的 JAR。
+2. 从 [GitHub Releases](https://github.com/zoyluoblue/Minecraft_Guns/releases) 或 [Modrinth](https://modrinth.com/mod/zoyluo-guns/) 下载非 sources 的 JAR。
 3. 客户端和 Dedicated Server 都将 JAR 放入 <code>mods</code> 文件夹。
 4. 启动游戏后用原版材料合成枪械和弹药；也可使用下方命令进行调试。
 

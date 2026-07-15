@@ -7,6 +7,7 @@
 [![Java 21](https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white)](https://adoptium.net/)
 [![License](https://img.shields.io/badge/License-MIT-3DA639)](LICENSE)
 [![Releases](https://img.shields.io/github/v/release/zoyluoblue/Minecraft_Guns?display_name=tag)](https://github.com/zoyluoblue/Minecraft_Guns/releases)
+[![Modrinth](https://img.shields.io/badge/Modrinth-Download-5BD?logo=modrinth&logoColor=white)](https://modrinth.com/mod/zoyluo-guns/)
 
 Guns is a survival-first, server-authoritative Minecraft Fabric gun mod for Minecraft 1.21.3. Craft six weapons from vanilla materials, manufacture ammunition, repair worn equipment in an Anvil, and install fixed upgrades in a Smithing Table. It works on dedicated servers and includes English plus Simplified Chinese through Minecraft's native language setting.
 
@@ -21,12 +22,12 @@ Guns is a survival-first, server-authoritative Minecraft Fabric gun mod for Mine
 | Gameplay | Six weapons, five ammunition types, vanilla-material recipes, Anvil repair, Smithing Table upgrades |
 | Multiplayer | Server authoritative; dedicated-server path is covered by GameTest |
 | Languages | English and Simplified Chinese, switched through Options → Language |
-| Downloads | [GitHub Releases](https://github.com/zoyluoblue/Minecraft_Guns/releases) |
+| Downloads | [GitHub Releases](https://github.com/zoyluoblue/Minecraft_Guns/releases) · [Modrinth](https://modrinth.com/mod/zoyluo-guns/) |
 
 ## Install
 
 1. Install Fabric Loader for Minecraft 1.21.3 and the matching Fabric API.
-2. Download the non-sources JAR from [GitHub Releases](https://github.com/zoyluoblue/Minecraft_Guns/releases).
+2. Download the non-sources JAR from [GitHub Releases](https://github.com/zoyluoblue/Minecraft_Guns/releases) or [Modrinth](https://modrinth.com/mod/zoyluo-guns/).
 3. Put the JAR in the <code>mods</code> folder on every client and on the dedicated server.
 4. Start Minecraft, then craft weapons and ammunition with vanilla materials or use the commands below for testing.
 
