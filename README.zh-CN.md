@@ -95,10 +95,6 @@ Guns 是面向 Minecraft <code>1.21.3</code> 的 Fabric 生存枪械模组。玩
 
 [![Guns 枪械与弹药像素风格参考](assets/guns/references/guns-ammo-style-reference.png)](assets/guns/references/guns-ammo-style-reference.png)
 
-## 配方宣传图
-
-两张双语说明图完整展示生存玩法循环：六把枪械与五种弹药，其中狙击枪和冲锋枪共用步枪弹。
-
 [![Guns 生存枪械配方](assets/guns/recipes/gun-recipes-reference.png)](assets/guns/recipes/gun-recipes-reference.png)
 
 [![Guns 弹药配方](assets/guns/recipes/ammo-recipes-reference.png)](assets/guns/recipes/ammo-recipes-reference.png)
@@ -115,10 +111,6 @@ Guns 是面向 Minecraft <code>1.21.3</code> 的 Fabric 生存枪械模组。玩
 ~~~
 
 构建会校验中英文语言键一致、玩法资源、15 件自有物品视觉、12 个 Particle 定义和 34 帧粒子贴图。`runGameTest` 会在隔离的 Dedicated Server 中执行弹药消耗、创造模式弹药、模块 Schema、Smithing 配方和弹道预算回归。
-
-## 自动发布
-
-推送带注释的 `vX.Y.Z` tag 后，GitHub 会自动创建新的 Release。工作流要求 tag 版本与 `gradle.properties` 中的 `mod_version` 一致，随后会执行干净构建和 Dedicated Server GameTest、校验正式 JAR，并上传正式 JAR、sources JAR、SHA256 校验值和两张配方宣传图；任一检查失败都不会创建 Release。
 
 ## 视频
 

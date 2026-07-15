@@ -80,10 +80,6 @@ The approved weapon and ammunition recipe posters plus the exact gun/ammunition 
 
 [![Approved Guns weapon and ammunition pixel-art style](assets/guns/references/guns-ammo-style-reference.png)](assets/guns/references/guns-ammo-style-reference.png)
 
-## Recipe posters
-
-These two bilingual posters show the complete survival crafting loop: six weapons and five ammunition types, including the shared Rifle Round used by the Sniper Rifle and SMG.
-
 [![Guns survival weapon recipes](assets/guns/recipes/gun-recipes-reference.png)](assets/guns/recipes/gun-recipes-reference.png)
 
 [![Guns ammunition recipes](assets/guns/recipes/ammo-recipes-reference.png)](assets/guns/recipes/ammo-recipes-reference.png)
@@ -113,10 +109,6 @@ English and Simplified Chinese are included. Switch through Minecraft's native *
 ~~~
 
 The build verifies bilingual key parity, gameplay resources, all 15 owned item visuals, 12 Particle definitions, and all 34 particle frames. `runGameTest` executes ammunition consumption, creative-mode ammunition, upgrade schema, Smithing recipe, and ballistic-budget regressions in an isolated dedicated server.
-
-## Release automation
-
-Push an annotated `vX.Y.Z` tag to publish a new GitHub Release automatically. The workflow requires the tag version to match `mod_version` in `gradle.properties`, then runs a clean build and the dedicated-server GameTests, validates the release JAR, and uploads the production JAR, sources JAR, SHA256 checksum, and both recipe posters. A failed check creates no Release.
 
 ## Video
 
