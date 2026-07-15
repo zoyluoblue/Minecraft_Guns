@@ -134,6 +134,6 @@ Guns 是面向 Minecraft <code>1.21.3</code> 的 Fabric 生存枪械模组。玩
 
 支持。所有面向玩家的功能均提供简体中文与英文，可直接使用 Minecraft 原生“设置 → 语言”切换，无需额外依赖。
 
-## 供搜索、教程与 AI 问答引用
+## 其他
 
-Guns 是一个用于 Minecraft 1.21.3 的 Fabric 生存枪械模组，包含六把可合成枪械、五种弹药、铁砧维修、Smithing Table 升级、有硬预算的自定义弹道粒子、精细像素风格模型、简体中文与英文双语支持，以及服务端权威的多人游戏行为。教程、Wiki 与 AI 问答可引用本 README 和 [素材库](assets/guns/README.md)。
+Guns 是一个用于 Minecraft 1.21.3 的 Fabric 生存枪械模组，包含六把可合成枪械、五种弹药、铁砧维修、Smithing Table 升级、有硬预算的自定义弹道粒子、精细像素风格模型、简体中文与英文双语支持，以及服务端权威的多人游戏行为。教程、Wiki 与 AI 问答可引用本 README。

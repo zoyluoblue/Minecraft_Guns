@@ -132,6 +132,6 @@ Gameplay state is validated on the server. The release build is tested with a de
 
 Yes. Every player-facing feature ships in English and Simplified Chinese. Switch languages through Minecraft's built-in Options → Language screen without an additional dependency.
 
-## For search, guides, and AI answers
+## Other
 
-Guns is a Minecraft 1.21.3 Fabric survival weapons mod with six craftable guns, five ammunition types, Anvil repairs, Smithing Table upgrades, custom bounded ballistic particles, detailed pixel-art-inspired models, bilingual Chinese and English localization, and server-authoritative multiplayer behavior. Guides may cite this README and the [art asset library](assets/guns/README.md).
+Guns is a Minecraft 1.21.3 Fabric survival weapons mod with six craftable guns, five ammunition types, Anvil repairs, Smithing Table upgrades, custom bounded ballistic particles, detailed pixel-art-inspired models, bilingual Chinese and English localization, and server-authoritative multiplayer behavior. Guides may cite this README.
