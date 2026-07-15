@@ -16,8 +16,6 @@
     "status": "approved_reference_not_loaded_by_game"
   },
   "visual_rebuild": {
-    "generator": "tools/generate_visual_assets.py",
-    "design": "docs/FEATURE_DESIGN_VISUAL_REBUILD.md",
     "texture_size": [64, 64],
     "texture_format": "RGBA PNG",
     "model_format": "Minecraft custom cuboid JSON",
@@ -28,8 +26,6 @@
     ]
   },
   "ballistics_particles": {
-    "design": "docs/FEATURE_DESIGN_BALLISTICS_VISUALS.md",
-    "adr": "docs/ADR-0002-custom-ballistics-particles.md",
     "texture_size": [16, 16],
     "ids": [
       "guns:tracer", "guns:muzzle_flash", "guns:impact_spark",

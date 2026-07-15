@@ -32,11 +32,11 @@ This is the approved source of truth for the six weapon and five ammunition silh
 
 ## Visual rebuild / 视觉重构
 
-The game now uses owned `64x64` RGBA material textures and detailed custom cuboid models for all six weapons, five ammunition types, the Gunsmithing Template, and three upgrade modules. Every model maps to its own `guns:item/*` texture and includes explicit inventory, dropped-item, third-person, and first-person transforms. The same generator also produces 34 animated texture frames for 12 custom ballistic particles. The deterministic source is [`tools/generate_visual_assets.py`](../../tools/generate_visual_assets.py), and the visual contracts are in [`docs/FEATURE_DESIGN_VISUAL_REBUILD.md`](../../docs/FEATURE_DESIGN_VISUAL_REBUILD.md) and [`docs/FEATURE_DESIGN_BALLISTICS_VISUALS.md`](../../docs/FEATURE_DESIGN_BALLISTICS_VISUALS.md).
+The game now uses owned `64x64` RGBA material textures and detailed custom cuboid models for all six weapons, five ammunition types, the Gunsmithing Template, and three upgrade modules. Every model maps to its own `guns:item/*` texture and includes explicit inventory, dropped-item, third-person, and first-person transforms. The checked-in resources include 34 animated texture frames for 12 custom ballistic particles.
 
 Each `64x64` item texture intentionally combines a face-material atlas in the upper half with a reference-colored pixel silhouette in the lower half. The custom model UVs consume the atlas tiles, including their outlines, rivets, panel recesses, highlights, shadows, and energy cores.
 
-游戏现已为六把枪械、五种弹药、枪械改装模板和三个升级模块使用自有的 `64x64` RGBA 材质贴图与精细方块模型。每个模型只映射自身的 `guns:item/*` 贴图，并明确配置背包、掉落物、第三人称和第一人称展示变换；同一生成器还会为十二种自定义弹道粒子生成 34 帧动画贴图。可复现的资源源文件见 [`tools/generate_visual_assets.py`](../../tools/generate_visual_assets.py)，视觉契约见 [`docs/FEATURE_DESIGN_VISUAL_REBUILD.md`](../../docs/FEATURE_DESIGN_VISUAL_REBUILD.md) 与 [`docs/FEATURE_DESIGN_BALLISTICS_VISUALS.md`](../../docs/FEATURE_DESIGN_BALLISTICS_VISUALS.md)。
+游戏现已为六把枪械、五种弹药、枪械改装模板和三个升级模块使用自有的 `64x64` RGBA 材质贴图与精细方块模型。每个模型只映射自身的 `guns:item/*` 贴图，并明确配置背包、掉落物、第三人称和第一人称展示变换；已提交的资源包含十二种自定义弹道粒子的 34 帧动画贴图。
 
 每张 `64x64` 物品贴图的上半部分是模型面材质图集，下半部分是参考图配色的像素轮廓预览。自定义模型 UV 会读取材质图集中的描边、铆钉、面板凹槽、高光、阴影和能量核心细节。
 

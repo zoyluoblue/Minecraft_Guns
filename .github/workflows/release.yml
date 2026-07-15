@@ -38,7 +38,6 @@ jobs:
           VERSION="${TAG#v}"
           PROJECT_VERSION="$(sed -n 's/^mod_version=//p' gradle.properties)"
           [[ "$VERSION" == "$PROJECT_VERSION" ]]
-          test -f "docs/RELEASE_NOTES_${VERSION}.md"
       - name: Build and run release checks
         run: ./gradlew clean build runGameTest --no-daemon --stacktrace
       - name: Package verified release assets
@@ -72,13 +71,11 @@ jobs:
           TAG: ${{ github.ref_name }}
         run: |
           set -euo pipefail
-          VERSION="${TAG#v}"
-          NOTES_FILE="docs/RELEASE_NOTES_${VERSION}.md"
           TITLE="Guns ${TAG} — Minecraft Fabric Release"
 
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" release/* --clobber
-            gh release edit "$TAG" --title "$TITLE" --notes-file "$NOTES_FILE"
+            gh release edit "$TAG" --title "$TITLE"
           else
-            gh release create "$TAG" release/* --title "$TITLE" --notes-file "$NOTES_FILE"
+            gh release create "$TAG" release/* --title "$TITLE" --generate-notes
           fi

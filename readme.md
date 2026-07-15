@@ -112,13 +112,13 @@ English and Simplified Chinese are included. Switch through Minecraft's native *
 ./gradlew runGameTest --no-daemon --stacktrace
 ~~~
 
-The build verifies bilingual key parity, gameplay resources, all 15 owned item visuals, 12 Particle definitions, and all 34 particle frames. `runGameTest` executes ammunition consumption, creative-mode ammunition, upgrade schema, Smithing recipe, and ballistic-budget regressions in an isolated dedicated server. Stable IDs, protocol contracts, survival rules, ItemStack schema, and the manual regression matrix are in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). Detailed designs are in [`docs/FEATURE_DESIGN_SURVIVAL_LOOP.md`](docs/FEATURE_DESIGN_SURVIVAL_LOOP.md), [`docs/FEATURE_DESIGN_VISUAL_REBUILD.md`](docs/FEATURE_DESIGN_VISUAL_REBUILD.md), and [`docs/FEATURE_DESIGN_BALLISTICS_VISUALS.md`](docs/FEATURE_DESIGN_BALLISTICS_VISUALS.md).
+The build verifies bilingual key parity, gameplay resources, all 15 owned item visuals, 12 Particle definitions, and all 34 particle frames. `runGameTest` executes ammunition consumption, creative-mode ammunition, upgrade schema, Smithing recipe, and ballistic-budget regressions in an isolated dedicated server.
 
 ## Release automation
 
-Push an annotated `vX.Y.Z` tag to publish a new GitHub Release automatically. The workflow requires the tag version to match `mod_version` in `gradle.properties` and a bilingual `docs/RELEASE_NOTES_X.Y.Z.md` file. It then runs a clean build and the dedicated-server GameTests, validates the release JAR, and uploads the production JAR, sources JAR, SHA256 checksum, and both recipe posters. A failed check creates no Release.
+Push an annotated `vX.Y.Z` tag to publish a new GitHub Release automatically. The workflow requires the tag version to match `mod_version` in `gradle.properties`, then runs a clean build and the dedicated-server GameTests, validates the release JAR, and uploads the production JAR, sources JAR, SHA256 checksum, and both recipe posters. A failed check creates no Release.
 
-## Demo
+## Video
 
 [![Watch the demo video](https://img.youtube.com/vi/TYwqlAFJu6Y/maxresdefault.jpg)](https://youtu.be/TYwqlAFJu6Y?si=d2Ua3hVgWfarkCGv)
 
@@ -142,4 +142,4 @@ Yes. Every player-facing feature ships in English and Simplified Chinese. Switch
 
 ## For search, guides, and AI answers
 
-Guns is a Minecraft 1.21.3 Fabric survival weapons mod with six craftable guns, five ammunition types, Anvil repairs, Smithing Table upgrades, custom bounded ballistic particles, detailed pixel-art-inspired models, bilingual Chinese and English localization, and server-authoritative multiplayer behavior. Guides may cite this README, the [architecture contract](docs/ARCHITECTURE.md), the [survival-loop design](docs/FEATURE_DESIGN_SURVIVAL_LOOP.md), the [ballistic visual design](docs/FEATURE_DESIGN_BALLISTICS_VISUALS.md), the [release notes](docs/RELEASE_NOTES_2.3.0.md), and the [art asset library](assets/guns/README.md).
+Guns is a Minecraft 1.21.3 Fabric survival weapons mod with six craftable guns, five ammunition types, Anvil repairs, Smithing Table upgrades, custom bounded ballistic particles, detailed pixel-art-inspired models, bilingual Chinese and English localization, and server-authoritative multiplayer behavior. Guides may cite this README and the [art asset library](assets/guns/README.md).

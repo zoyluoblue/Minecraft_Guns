@@ -2,7 +2,7 @@
 
 ## 开始前
 
-依次阅读 `readme.md`/`README.zh-CN.md`、`docs/ARCHITECTURE.md`、`fabric.mod.json`、`guns.mixins.json` 和待修改源码。位于 `mc_mods` 工作区时，同时遵循上级 `../AGENTS.md` 与 `../docs/mod-development/`。
+依次阅读 `readme.md`/`README.zh-CN.md`、`fabric.mod.json`、`guns.mixins.json` 和待修改源码。位于 `mc_mods` 工作区时，同时遵循上级 `../AGENTS.md`。
 
 ## 不变量
 
@@ -25,4 +25,4 @@
 ./gradlew clean build --no-daemon --stacktrace
 ~~~
 
-还需按 `docs/ARCHITECTURE.md` 执行客户端开镜、六种武器、断线清理和 Dedicated Server 手工回归。
+还需执行客户端开镜、六种武器、断线清理和 Dedicated Server 手工回归。
